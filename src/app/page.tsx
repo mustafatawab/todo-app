@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { FaTrash } from "react-icons/fa";
@@ -22,7 +23,6 @@ import { Cross, DeleteIcon, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { IoClose } from "react-icons/io5";
-
 
 export default function Home() {
   const [inputTag, setInputTag] = useState<string>("");
@@ -42,10 +42,9 @@ export default function Home() {
     console.log(tags);
   };
 
-
   const removeTag = (index: Number) => {
-    setTags(tags.filter((_ , i) => i != index))
-  }
+    setTags(tags.filter((_, i) => i != index));
+  };
 
   return (
     <div className="overflow-x-auto m-10">
@@ -77,38 +76,31 @@ export default function Home() {
 
                   <div className="space-y-2">
                     <div className="flex justify-between">
-
-                    <Label>Add Tags</Label>
-                    <span className="text-red-400">Limit : {5 - tags.length}</span>
+                      <Label>Add Tags</Label>
+                      <span className="text-red-400">
+                        Limit : {5 - tags.length}
+                      </span>
                     </div>
-                      <Input
-                        value={inputTag}
-                        onKeyDown={handleInputKeyDown}
-                        onChange={onTagChange}
-                        className="border-l-2 border-t-2 border-b-2 border-slate-200 rounded-l-md outline-0 w-full p-2 "
-                        placeholder="Add some tags"
-                        disabled={tags.length == 5}
-                      />
-                     
-                    
+                    <Input
+                      value={inputTag}
+                      onKeyDown={handleInputKeyDown}
+                      onChange={onTagChange}
+                      className="border-l-2 border-t-2 border-b-2 border-slate-200 rounded-l-md outline-0 w-full p-2 "
+                      placeholder="Add some tags"
+                      disabled={tags.length == 5}
+                    />
                   </div>
                 </div>
 
-              <div className="flex flex-wrap gap-1 mt-2">
-
-                {tags.map((tag, i) => (
-                  <Badge key={i} className="text-black bg-slate-300 p-1">
-                    <span>
-
-                    {tag}
-                    </span>
-                    <button  onClick={() => removeTag(i)}>
-
-                    <IoClose className="cursor-point"/>
-                    </button>
-
-                  </Badge>
-                ))}
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {tags.map((tag, i) => (
+                    <Badge key={i} className="text-black bg-slate-300 p-1">
+                      <span>{tag}</span>
+                      <button onClick={() => removeTag(i)}>
+                        <IoClose className="cursor-point" />
+                      </button>
+                    </Badge>
+                  ))}
                 </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
@@ -123,9 +115,30 @@ export default function Home() {
         <div className="flex justify-between items-center p-6 m-5">
           <div className="">
             <div className="flex  ">
-              <h1 className="font-bold text-[40px] mb-3  leading-tight">
+              <h1 className="font-bold text-[30px] mb-3  leading-tight">
                 Scalable Next.js Folder Structure for Real-World Projects
               </h1>
+            </div>
+            <div className="flex flex-wrap justify-between">
+              <span className="flex   items-center gap-2 my-5">
+                <Avatar>
+                  <AvatarFallback className="text-white bg-gray-800">
+                    I
+                  </AvatarFallback>
+                </Avatar>
+                <p className="text-lg">Imran Khan</p>
+              </span>
+            <p>2/9/2025</p>
+            </div>
+            <div className="flex justify-between">
+              <p className="text-gray-600 w-3/4">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Blanditiis ratione facilis architecto veniam. Explicabo
+                voluptatum doloremque exercitationem nulla quisquam libero harum
+                perspiciatis repellat distinctio, quidem quia expedita,
+                temporibus, omnis voluptate.
+              </p>
+
               <div>
                 <button className="text-red-500 px-2 ">
                   <FaTrash size={"19"} />
@@ -135,20 +148,6 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            <div className="flex   items-center gap-6 my-5">
-              <div className=" text-center flex items-center  w-12 h-12 bg-gray-300 rounded-full">
-                IM
-              </div>
-              <p>Imran Khan</p>
-              <p>2/9/2025</p>
-            </div>
-            <p className="text-gray-600 ">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Blanditiis ratione facilis architecto veniam. Explicabo voluptatum
-              doloremque exercitationem nulla quisquam libero harum perspiciatis
-              repellat distinctio, quidem quia expedita, temporibus, omnis
-              voluptate.
-            </p>
           </div>
         </div>
       </div>
