@@ -16,6 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import toast from "react-hot-toast";
+import LoginButton from "@/components/LoginButton";
 const page = () => {
   const [showPass, setShowPass] = useState<boolean>(false);
   const [form, setForm] = useState({
@@ -106,6 +107,8 @@ const page = () => {
           <Button variant="outline" className="w-full">
             Login with Google
           </Button>
+
+          <LoginButton text="login with Github" provider="github"/>
         </CardFooter>
       </Card>
     </main>

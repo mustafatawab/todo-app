@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,13 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import toast from "react-hot-toast";
+import { useFormState, useFormStatus } from "react-dom";
+import { useRef } from "react";
+import { useActionState } from "react";
+
 const page = () => {
+ 
+
   const [showPass, setShowPass] = useState<boolean>(false);
   const [form, setForm] = useState({
     name: "",
@@ -39,12 +45,7 @@ const page = () => {
     setShowPass(e.target.checked)
     console.log(showPass)
   }
-  const onSubmit = async (e : any) => {
-    e.preventDefault()
-    if(form.password != form.confirm_password){
-        toast.error("Password does not match")
-    }
-  };
+  
 
   return (
     <main className="px-5 w-full min-h-screen flex items-center justify-center">
@@ -52,7 +53,7 @@ const page = () => {
         <h2 className="text-center text-3xl font-bold mb-5">Register</h2>
 
         <CardContent>
-          <form action="" onSubmit={onSubmit} className="flex flex-col gap-5">
+          <form className="flex flex-col gap-5">
             <div className="space-y-2">
               <Label htmlFor="name" className="text-lg">
                 Full Name
