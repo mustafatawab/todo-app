@@ -2,11 +2,24 @@
 import {auth} from '@/lib/auth'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { PrismaClient } from "@prisma/client"
+
 
 
 export const register = async (name: string , email : string , password : string) => {
+    const prisma = new PrismaClient();
+
     
-    const response = await auth.api.signUpEmail({
+    const existingUser = await prisma.user.findUnique({
+        where: {
+            email: email,
+        },
+    });
+    
+    
+
+
+    let response = await auth.api.signUpEmail({
         body : {
             name,
             email,
@@ -14,6 +27,7 @@ export const register = async (name: string , email : string , password : string
             callbackURL : '/'
         }
     })
+    
     return response
 }
 
@@ -50,4 +64,5 @@ export const socialLogin = async (provider : "github" | "google") => {
     if (url){
         redirect(url)
     }
+    
 }

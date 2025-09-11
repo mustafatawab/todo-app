@@ -19,8 +19,10 @@ import toast from "react-hot-toast";
 import { useFormState, useFormStatus } from "react-dom";
 import { useRef } from "react";
 import { useActionState } from "react";
-import { register } from "@/action/auth-action";
+import { register, socialLogin } from "@/action/auth-action";
 import { useRouter } from "next/navigation";
+import { FaGoogle, FaGithub } from "react-icons/fa";
+import Image from "next/image";
 
 const page = () => {
   const ref = useRef<HTMLFormElement>(null);
@@ -75,9 +77,14 @@ const page = () => {
     }
   };
 
+
+  const socialSignIn = async (provider: "github" | "google") => {
+    const res = await socialLogin(provider)
+  }
+
   return (
     <main className="px-5 w-full min-h-screen flex items-center justify-center">
-      <Card className="w-full md:w-1/2 lg:w-1/3 space-y-4 bg-white p-5 border-0">
+      <Card className="w-full md:w-1/2 lg:w-1/3 space-y-4 bg-white p-5 border-0 overflow-hidden">
         <h2 className="text-center text-3xl font-bold mb-5">Register</h2>
 
         <CardContent>
@@ -174,9 +181,16 @@ const page = () => {
             </Link>{" "}
           </p>
           <span>OR</span>
-          <Button variant="outline" className="w-full">
-            Sign Up with Google
-          </Button>
+
+          <div className="flex flex-wrap md:flex-nowrap  justify-center items-center gap-2 w-3/4 md:w-1/2">
+
+            <Button onClick={() => socialSignIn("google")} variant="outline" className="w-full">
+            <Image src={'/google.png'} alt="Google" width={20} height={20} />
+            </Button>
+            <Button onClick={() => socialLogin("github")} variant="outline" className="w-full">
+            <FaGithub className="w-[24px] h-[24px]"/>
+            </Button>
+          </div>
         </CardFooter>
       </Card>
     </main>

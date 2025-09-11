@@ -16,7 +16,9 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import toast from "react-hot-toast";
-import { login } from "@/action/auth-action";
+import { login, socialLogin } from "@/action/auth-action";
+import Image from "next/image";
+import { FaGithub } from "react-icons/fa";
 const page = () => {
   const [showPass, setShowPass] = useState<boolean>(false);
   const [form, setForm] = useState({
@@ -55,7 +57,9 @@ const page = () => {
       toast.success("Logged in Successfully")
     }
   };
-
+  const socialSignIn = async (provider: "github" | "google") => {
+    const res = await socialLogin(provider)
+  }
 
   return (
     <main className="px-5 w-full min-h-screen flex flex-col items-center justify-center ">
@@ -118,9 +122,15 @@ const page = () => {
             </Link>{" "}
           </p>
           <span>OR</span>
-          <Button variant="outline" className="w-full">
-            Login with Google
-          </Button>
+           <div className="flex flex-wrap md:flex-nowrap  justify-center items-center gap-2 w-3/4 md:w-1/2">
+          
+                      <Button onClick={() => socialSignIn("google")} variant="outline" className="w-full">
+                      <Image src={'/google.png'} alt="Google" width={20} height={20} />
+                      </Button>
+                      <Button onClick={() => socialLogin("github")} variant="outline" className="w-full">
+                      <FaGithub className="w-[24px] h-[24px]"/>
+                      </Button>
+                    </div>
 
         </CardFooter>
       </Card>
