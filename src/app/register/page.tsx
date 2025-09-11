@@ -19,10 +19,12 @@ import toast from "react-hot-toast";
 import { useFormState, useFormStatus } from "react-dom";
 import { useRef } from "react";
 import { useActionState } from "react";
+import { register } from "@/action/auth-action";
+import { useRouter } from "next/navigation";
 
 const page = () => {
- 
-
+  const ref = useRef<HTMLFormElement>(null);
+  const router = useRouter()
   const [showPass, setShowPass] = useState<boolean>(false);
   const [form, setForm] = useState({
     name: "",
@@ -41,11 +43,37 @@ const page = () => {
     console.log(form);
   };
 
-  const onCheckboxChange = (e : any) =>{
-    setShowPass(e.target.checked)
-    console.log(showPass)
-  }
-  
+  const onCheckboxChange = (e: any) => {
+    setShowPass(e.target.checked);
+    console.log(showPass);
+  };
+
+  const signUpEmail = async (e: any) => {
+    const { name, email, password, confirm_password } = form;
+    e.preventDefault();
+    if (password !== confirm_password) {
+      toast.error("Password do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    const res = await register(name, email, password);
+    if (res.user) {
+      toast.success("Registered Successfully");
+      ref.current?.reset();
+      router.push("/")
+      setForm({
+        name: "",
+        email: "",
+        password: "",
+        confirm_password: "",
+      });
+    }
+  };
 
   return (
     <main className="px-5 w-full min-h-screen flex items-center justify-center">
@@ -53,7 +81,11 @@ const page = () => {
         <h2 className="text-center text-3xl font-bold mb-5">Register</h2>
 
         <CardContent>
-          <form className="flex flex-col gap-5">
+          <form
+            ref={ref}
+            onSubmit={signUpEmail}
+            className="flex flex-col gap-5"
+          >
             <div className="space-y-2">
               <Label htmlFor="name" className="text-lg">
                 Full Name
@@ -118,7 +150,11 @@ const page = () => {
               />
             </div>
             <div className="flex items-start gap-3">
-              <Checkbox id="toggle" onChange={onCheckboxChange} checked={showPass} />
+              <Checkbox
+                id="toggle"
+                onChange={onCheckboxChange}
+                checked={showPass}
+              />
               <Label htmlFor="toggle">Show Password</Label>
             </div>
 

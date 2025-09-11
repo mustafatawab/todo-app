@@ -16,7 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import toast from "react-hot-toast";
-import LoginButton from "@/components/LoginButton";
+import { login } from "@/action/auth-action";
 const page = () => {
   const [showPass, setShowPass] = useState<boolean>(false);
   const [form, setForm] = useState({
@@ -38,17 +38,31 @@ const page = () => {
     setShowPass(e.target.checked)
     console.log(showPass)
   }
-  const onSubmit = async (e : any) => {
+  const signInEmail = async (e : any) => {
     e.preventDefault()
-    
+    const {email , password} = form
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    const res = await login(email , password)
+    if (res.user){
+      setForm({
+        email : '',
+        password : ''
+      })
+      toast.success("Logged in Successfully")
+    }
   };
+
 
   return (
     <main className="px-5 w-full min-h-screen flex flex-col items-center justify-center ">
       <Card className="w-full md:w-1/2 lg:w-1/3 space-y-4 bg-white p-5 border-0">
         <h2 className="text-center text-3xl font-bold mb-5">Login</h2>
         <CardContent>
-          <form action="" onSubmit={onSubmit} className="flex flex-col gap-5">
+          <form action="" onSubmit={signInEmail} className="flex flex-col gap-5">
             
             <div className="space-y-2">
               <Label htmlFor="email" className="text-lg">
@@ -108,7 +122,6 @@ const page = () => {
             Login with Google
           </Button>
 
-          <LoginButton text="login with Github" provider="github"/>
         </CardFooter>
       </Card>
     </main>

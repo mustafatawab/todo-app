@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import Providers from "@/components/Providers";
-import { getSession } from "@/lib/auth";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,15 +23,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const session = await getSession()
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50`}
       >
-        <Providers session={session}>
         {children}
-        </Providers>
         <Toaster />
       </body>
     </html>
