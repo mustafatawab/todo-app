@@ -19,6 +19,7 @@ import toast from "react-hot-toast";
 import { login, socialLogin } from "@/action/auth-action";
 import Image from "next/image";
 import { FaGithub } from "react-icons/fa";
+import { useRouter } from "next/router";
 const page = () => {
   const [showPass, setShowPass] = useState<boolean>(false);
   const [form, setForm] = useState({
@@ -55,6 +56,7 @@ const page = () => {
         password : ''
       })
       toast.success("Logged in Successfully")
+      useRouter().push('/')
     }
   };
   const socialSignIn = async (provider: "github" | "google") => {

@@ -4,20 +4,7 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { PrismaClient } from "@prisma/client"
 
-
-
 export const register = async (name: string , email : string , password : string) => {
-    const prisma = new PrismaClient();
-
-    
-    const existingUser = await prisma.user.findUnique({
-        where: {
-            email: email,
-        },
-    });
-    
-    
-
 
     let response = await auth.api.signUpEmail({
         body : {
