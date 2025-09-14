@@ -1,4 +1,4 @@
-type Task = {
+export type TaskType = {
     title : String,
     description : String,
     tags? : String[],
