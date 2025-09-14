@@ -5,6 +5,8 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import AddTask from "@/components/addTask";
+
+
 export default async function Home() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
@@ -23,7 +25,7 @@ export default async function Home() {
         <div>{session.user.email}</div>
         <div>{session.user.id}</div>
       </div>
-      
+
       <TaskList userId={session.user.id} />
     </div>
   );
