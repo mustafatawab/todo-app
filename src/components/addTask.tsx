@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { IoClose } from "react-icons/io5";
 import { Button } from "./ui/button";
+import toast from "react-hot-toast";
 
 const AddTask = ({ userId }: { userId: String }) => {
   const [taskForm, setTaskForm] = useState({
@@ -36,7 +37,6 @@ const AddTask = ({ userId }: { userId: String }) => {
 
   const onTagChange = (e: any) => {
     setInputTag(e.target.value);
-    console.log(inputTag);
   };
 
   const handleInputKeyDown = (event: any) => {
@@ -45,7 +45,6 @@ const AddTask = ({ userId }: { userId: String }) => {
       setInputTag("");
     }
 
-    console.log(tags);
   };
 
   const removeTag = (index: Number) => {
@@ -62,9 +61,6 @@ const AddTask = ({ userId }: { userId: String }) => {
 
   const submitTaskForm = async () => {
     const { title, description } = taskForm;
-    console.log(userId);
-    console.log(title);
-    console.log(description);
     const body = {
       title,
       description,
@@ -80,7 +76,6 @@ const AddTask = ({ userId }: { userId: String }) => {
         body: JSON.stringify(body),
       });
       const result = await res.json();
-      console.log(result.task);
 
       const existingTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
       localStorage.setItem(
@@ -91,7 +86,7 @@ const AddTask = ({ userId }: { userId: String }) => {
       setTaskForm({ title: "", description: "" }); // reset form
       setTags([]);
     } catch (error) {
-      console.log(error);
+        toast.error(error as string)
     } finally{
       setLoading(false)
     }

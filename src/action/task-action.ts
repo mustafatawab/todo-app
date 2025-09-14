@@ -37,7 +37,6 @@ export async function addTask(title : string, description: string) {
         const data =  await res.json()
         return data
     } catch (error) {
-        console.log("Error " , error)
         return error
     }
 }

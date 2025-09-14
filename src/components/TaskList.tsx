@@ -11,7 +11,6 @@ const TaskList = ({ userId }: { userId: String }) => {
     const res = await fetch(`/api/task?userId=${userId}`);
     // const res = await getTasks()
     const data = await res.json();
-    console.log(data.tasks);
     localStorage.setItem("tasks", JSON.stringify(data.tasks));
   };
 
@@ -24,11 +23,12 @@ const TaskList = ({ userId }: { userId: String }) => {
   }, [userId]);
 
   return (
-    <div>
+    <div className="spce-y-4">
       {tasks &&
         tasks.map((task: TaskType, index: number) => (
           <Task
             key={index}
+            id={task.id}
             title={task.title}
             description={task.description}
             tags={task.tags}

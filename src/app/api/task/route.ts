@@ -24,9 +24,7 @@ export async function POST(request: NextRequest) {
     
     const prisma = new PrismaClient();
     const { title, description, userId } = await request.json();
-    console.log(title)
-    console.log(description)
-    console.log(userId)
+    
     if (!title || !description || !userId) {
       return NextResponse.json(
         { message: "Title, Description and UserId are required" },
@@ -54,7 +52,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.log(error)  
+    return NextResponse.json({error})
   }
 }
 

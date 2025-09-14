@@ -42,12 +42,10 @@ const page = () => {
       [name]: value,
     });
 
-    console.log(form);
   };
 
   const onCheckboxChange = (e: any) => {
     setShowPass(e.target.checked);
-    console.log(showPass);
   };
 
   const signUpEmail = async (e: any) => {
