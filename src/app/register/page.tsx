@@ -56,14 +56,15 @@ const page = () => {
       return;
     }
 
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
       return;
     }
 
     const res = await register(name, email, password);
-    if (res.user) {
-      toast.success("Registered Successfully");
+    localStorage.removeItem("tasks")
+    if (res.status == 200) {
+      toast.success(res.message);
       ref.current?.reset();
       router.push("/")
       setForm({
@@ -72,6 +73,8 @@ const page = () => {
         password: "",
         confirm_password: "",
       });
+    }else if(res.status == 401){
+      toast.error(res.message)
     }
   };
 
@@ -132,7 +135,7 @@ const page = () => {
                 value={form.password}
                 onChange={handleChange}
                 id="password"
-                type="password"
+               type={showPass ? "text" : "password"}
                 placeholder="Password"
                 className="focus:bg-slate-100 focus:border-none"
                 required
@@ -148,7 +151,7 @@ const page = () => {
                 value={form.confirm_password}
                 onChange={handleChange}
                 id="confirm_password"
-                type="password"
+                type={showPass ? "text" : "password"}
                 placeholder="Confirm Password"
                 className="focus:bg-slate-100 focus:border-none"
                 required
@@ -157,7 +160,7 @@ const page = () => {
             <div className="flex items-start gap-3">
               <Checkbox
                 id="toggle"
-                onChange={onCheckboxChange}
+                onCheckedChange={(checked) => setShowPass(!!checked)}
                 checked={showPass}
               />
               <Label htmlFor="toggle">Show Password</Label>
