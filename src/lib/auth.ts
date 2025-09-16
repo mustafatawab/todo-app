@@ -21,4 +21,5 @@ export const auth = betterAuth({
     },
   },
   plugins: [nextCookies()],
+  secret : process.env.BETTER_AUTH_SECRET
 });
