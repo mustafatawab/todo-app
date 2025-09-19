@@ -96,9 +96,9 @@ const AddTask = ({ userId }: { userId: String }) => {
       <AlertDialog open={open} onOpenChange={setOpen}>
           <Button
             onClick={() => setOpen(true)}
-            className="bg-green-700 text-white px-2 flex items-center"
+            className="bg-green-700 text-white px-2 flex items-center cursor-pointer"
           >
-            <FaPlus /> Add Task
+            <FaPlus /> 
           </Button>
         <AlertDialogContent>
           <AlertDialogHeader>

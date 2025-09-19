@@ -4,7 +4,7 @@ import { Button } from './ui/button'
 import { signOut } from '@/action/auth-action'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
-
+import { LogOutIcon } from 'lucide-react'
 const LogoutButton = () => {
     const router = useRouter()
     const logout = async () =>{
@@ -14,7 +14,7 @@ const LogoutButton = () => {
     }   
   return (
     <div>
-        <Button onClick={logout} variant={"destructive"}>Logout</Button>
+        <Button className='cursor-pointer' onClick={logout} variant={"destructive"}><LogOutIcon /></Button>
     </div>
   )
 }

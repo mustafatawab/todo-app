@@ -19,7 +19,7 @@ import toast from "react-hot-toast";
 import { login, socialLogin } from "@/action/auth-action";
 import Image from "next/image";
 import { FaGithub } from "react-icons/fa";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 const page = () => {
   const [showPass, setShowPass] = useState<boolean>(false);
   const router = useRouter();

@@ -5,7 +5,15 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import AddTask from "@/components/addTask";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function Home() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -15,16 +23,25 @@ export default async function Home() {
 
   return (
     <div className="mt-10 container mx-auto px-4">
-      <div className="flex justify-center items-center gap-10">
+      <div className="flex max-w-6xl mx-auto justify-end items-center gap-5">
         <AddTask userId={session.user.id} />
+        <div className="flex gap-5">
         <LogoutButton />
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Avatar>
+                <AvatarFallback className="bg-black text-white">{session.user.name[0]}</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>{session.user.name}</DropdownMenuItem>
+              <DropdownMenuItem>{session.user.email}</DropdownMenuItem>
+              <DropdownMenuItem>{session.user.id}</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
-      <div className="flex flex-col justify-center items-center mt-10 text-2xl font-bold">
-        <div>{session.user.name}</div>
-        <div>{session.user.email}</div>
-        <div>{session.user.id}</div>
-      </div>
 
       <TaskList userId={session.user.id} />
     </div>
