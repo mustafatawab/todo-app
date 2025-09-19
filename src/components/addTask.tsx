@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { IoClose } from "react-icons/io5";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
+import { getAllTasks } from "@/lib/getAllTasks";
 
 const AddTask = ({ userId }: { userId: String }) => {
   const [taskForm, setTaskForm] = useState({
@@ -84,10 +85,13 @@ const AddTask = ({ userId }: { userId: String }) => {
       setOpen(false); // 🔹 close dialog only if success
       setTaskForm({ title: "", description: "" }); // reset form
       setTags([]);
+      await getAllTasks(userId)
     } catch (error) {
       toast.error(error as string);
     } finally {
       setLoading(false);
+      window.location.reload()
+
     }
   };
   return (

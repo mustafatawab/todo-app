@@ -3,38 +3,31 @@ import React, { useEffect, useState } from "react";
 import Task from "./Task";
 import { TaskType } from "@/types/Task";
 import { getTasks } from "@/action/task-action";
-
+import { getAllTasks } from "@/lib/getAllTasks";
 const TaskList = ({ userId }: { userId: String }) => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
 
-  const getAllTasks = async () => {
-    const res = await fetch(`/api/task?userId=${userId}`);
-    // const res = await getTasks()
-    const data = await res.json();
-    localStorage.setItem("tasks", JSON.stringify(data.tasks));
-  };
-
   useEffect(() => {
-    getAllTasks();
+    getAllTasks(userId);
     const storedTasks = localStorage.getItem("tasks");
     if (storedTasks) {
-        setTasks(JSON.parse(storedTasks));
+      setTasks(JSON.parse(storedTasks));
     }
   }, [userId]);
 
   return (
     <div className="spce-y-4">
-      {tasks &&
+      {tasks.length ? (
         tasks.map((task: TaskType, index: number) => (
-          <Task
-            key={index}
-            id={task.id}
-            title={task.title}
-            description={task.description}
-            tags={task.tags}
-            createdAt={task.createdAt}
-          />
-        ))}
+          <Task key={index} userId={userId} data={task} />
+        ))
+      ) : (
+        <>
+          <div className="text-center text-4xl font-semibold">
+            Add Your Tasks First
+          </div>
+        </>
+      )}
     </div>
   );
 };

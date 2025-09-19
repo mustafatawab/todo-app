@@ -9,7 +9,10 @@ import { Button } from "./ui/button";
 import { DeleteDialog } from "./deleteDialog";
 import UpdateTask from "./updateTask";
 
-const Task = ({id , title, description, tags, createdAt }: TaskType) => {
+const Task = ({data , userId }: {data : TaskType , userId : String}) => {
+
+const { id , title, description, tags, createdAt } = data
+
   const formattedDate = new Date(
     typeof createdAt === "string" || typeof createdAt === "number"
       ? createdAt
@@ -49,10 +52,10 @@ const Task = ({id , title, description, tags, createdAt }: TaskType) => {
             <p className="text-gray-600 w-3/4">{description}</p>
 
             <div className="flex items-center">
-              <DeleteDialog id={id}>
+              <DeleteDialog id={id} userId={userId}>
                 <FaTrash  className="text-red-500"/>
               </DeleteDialog>
-              <UpdateTask data={{id ,title, description}} />
+              <UpdateTask userId={userId} data={{id ,title, description}} />
              
             </div>
           </div>

@@ -12,15 +12,18 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { getAllTasks } from "@/lib/getAllTasks";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 export function DeleteDialog({
   children,
   id,
+  userId
 }: {
   children: React.ReactNode;
   id: String;
+  userId: String;
 }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -35,12 +38,14 @@ export function DeleteDialog({
       const data = await res.json();
       toast.success("Deleted Successfully !!!")
       setOpen(false);
-      window.location.reload()
+      await getAllTasks(userId)
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong")
     } finally {
       setLoading(false);
+      window.location.reload()
+
     }
   };
 

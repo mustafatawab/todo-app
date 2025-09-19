@@ -23,11 +23,14 @@ import { IoClose } from "react-icons/io5";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 import { TaskType } from "@/types/Task";
+import { getAllTasks } from "@/lib/getAllTasks";
 
 const UpdateTask = ({
   data,
+  userId
 }: {
   data: { id: String; title: String; description: String };
+  userId : String;
 }) => {
   const [taskForm, setTaskForm] = useState({
     title: data.title,
@@ -88,12 +91,14 @@ const UpdateTask = ({
       localStorage.setItem("tasks", JSON.stringify(existingTasks));
 
       setTaskForm({ title: "", description: "" }); 
-      window.location.reload()
+      getAllTasks(userId)
       setOpen(false); 
     } catch (error) {
       toast.error(error as string);
     } finally {
       setLoading(false);
+      window.location.reload()
+
     }
   };
   return (
