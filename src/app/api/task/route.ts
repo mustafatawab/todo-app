@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request:NextRequest) {
   
   const prisma = new PrismaClient();
-  const { id, title, description, completed } = await request.json();
+  const { id, title, description } = await request.json();
 
   if (!id) {
     return NextResponse.json({ message: "Task ID is required" }, { status: 400 });
@@ -81,7 +81,7 @@ export async function PUT(request:NextRequest) {
 
   const updatedTask = await prisma.tasks.update({
     where: { id },
-    data: { title, description, completed },
+    data: { title, description },
   });
 
 

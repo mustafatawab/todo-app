@@ -7,6 +7,7 @@ import { FaEdit } from "react-icons/fa";
 import { TaskType } from "@/types/Task";
 import { Button } from "./ui/button";
 import { DeleteDialog } from "./deleteDialog";
+import UpdateTask from "./updateTask";
 
 const Task = ({id , title, description, tags, createdAt }: TaskType) => {
   const formattedDate = new Date(
@@ -51,9 +52,8 @@ const Task = ({id , title, description, tags, createdAt }: TaskType) => {
               <DeleteDialog id={id}>
                 <FaTrash  className="text-red-500"/>
               </DeleteDialog>
-              <Button variant={'ghost'} className="text-blue-500   ">
-                <FaEdit />
-              </Button>
+              <UpdateTask data={{id ,title, description}} />
+             
             </div>
           </div>
         </div>

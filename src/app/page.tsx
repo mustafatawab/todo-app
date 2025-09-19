@@ -26,22 +26,25 @@ export default async function Home() {
       <div className="flex max-w-6xl mx-auto justify-end items-center gap-5">
         <AddTask userId={session.user.id} />
         <div className="flex gap-5">
-        <LogoutButton />
+          <LogoutButton />
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar>
-                <AvatarFallback className="bg-black text-white">{session.user.name[0]}</AvatarFallback>
+                <AvatarFallback className="bg-black text-white">
+                  {session.user.name[0]}
+                </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent className="p-1">
               <DropdownMenuItem>{session.user.name}</DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem>{session.user.email}</DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem>{session.user.id}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
-
 
       <TaskList userId={session.user.id} />
     </div>

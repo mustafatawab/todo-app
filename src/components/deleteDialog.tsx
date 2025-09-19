@@ -33,9 +33,9 @@ export function DeleteDialog({
         body: JSON.stringify({ id }),
       });
       const data = await res.json();
+      toast.success("Deleted Successfully !!!")
       setOpen(false);
       window.location.reload()
-      toast.success("Deleted")
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong")

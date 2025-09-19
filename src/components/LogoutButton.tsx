@@ -14,7 +14,7 @@ const LogoutButton = () => {
     }   
   return (
     <div>
-        <Button className='cursor-pointer' onClick={logout} variant={"destructive"}><LogOutIcon /></Button>
+        <Button className='cursor-pointer w-full' onClick={logout} variant={"destructive"}><LogOutIcon /></Button>
     </div>
   )
 }

@@ -39,6 +39,9 @@ const page = () => {
   const onCheckboxChange = (e: any) => {
     setShowPass(e.target.checked);
   };
+
+
+  
   const signInEmail = async (e: any) => {
     e.preventDefault();
     const { email, password } = form;
@@ -58,6 +61,8 @@ const page = () => {
       toast.error(res.message);
     }
   };
+
+
   const socialSignIn = async (provider: "github" | "google") => {
     const res = await socialLogin(provider);
   };
