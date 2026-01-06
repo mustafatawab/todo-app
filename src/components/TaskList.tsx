@@ -8,11 +8,32 @@ const TaskList = ({ userId }: { userId: String }) => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
 
   useEffect(() => {
-    getAllTasks(userId);
-    const storedTasks = localStorage.getItem("tasks");
-    if (storedTasks) {
-      setTasks(JSON.parse(storedTasks));
-    }
+    let mounted = true;
+
+    (async () => {
+      try {
+        const data = await getAllTasks(userId);
+        if (mounted && data?.tasks) {
+          setTasks(data.tasks);
+        }
+      } catch (err) {
+        const storedTasks = localStorage.getItem("tasks");
+        if (mounted && storedTasks) {
+          setTasks(JSON.parse(storedTasks));
+        }
+      }
+    })();
+
+    const handleTaskAdded = (e: any) => {
+      setTasks((prev) => [e.detail, ...prev]);
+    };
+
+    window.addEventListener("taskAdded", handleTaskAdded);
+
+    return () => {
+      mounted = false;
+      window.removeEventListener("taskAdded", handleTaskAdded);
+    };
   }, [userId]);
 
   return (

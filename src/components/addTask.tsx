@@ -80,18 +80,22 @@ const AddTask = ({ userId }: { userId: String }) => {
       const existingTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
       localStorage.setItem(
         "tasks",
-        JSON.stringify([...existingTasks, result.task])
+        JSON.stringify([result.task, ...existingTasks])
       );
+
+      // notify other client components so they can update immediately
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("taskAdded", { detail: result.task }));
+      }
+
       setOpen(false); // 🔹 close dialog only if success
       setTaskForm({ title: "", description: "" }); // reset form
       setTags([]);
-      await getAllTasks(userId)
+      await getAllTasks(userId);
     } catch (error) {
       toast.error(error as string);
     } finally {
       setLoading(false);
-      window.location.reload()
-
     }
   };
   return (
