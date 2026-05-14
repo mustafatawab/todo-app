@@ -3,15 +3,20 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { PrismaClient } from "@/generated/prisma";
+
+
 export const register = async (
   name: string,
   email: string,
   password: string
 ) => {
+
+
   const prisma = new PrismaClient();
   const existingUser = await prisma.user.findUnique({
     where: { email: email },
   });
+  
 
   if (existingUser) {
     return {

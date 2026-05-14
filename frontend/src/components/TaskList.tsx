@@ -37,17 +37,28 @@ const TaskList = ({ userId }: { userId: String }) => {
   }, [userId]);
 
   return (
-    <div className="spce-y-4">
+    <div className="space-y-8 pb-12">
       {tasks.length ? (
         tasks.map((task: TaskType, index: number) => (
           <Task key={index} userId={userId} data={task} />
         ))
       ) : (
-        <>
-          <div className="text-center text-4xl font-semibold">
-            Add Your Tasks First
+        <div className="flex flex-col items-center justify-center py-32 text-center border border-dashed border-primary/20 bg-primary/5">
+          <div className="relative mb-8">
+            <div className="w-16 h-16 border border-primary/40 flex items-center justify-center animate-pulse">
+              <div className="w-8 h-8 border border-primary/60 rotate-45" />
+            </div>
+            <div className="absolute -top-2 -right-2 w-4 h-4 bg-background border border-primary/20 flex items-center justify-center">
+              <div className="w-1.5 h-1.5 bg-primary" />
+            </div>
           </div>
-        </>
+          <div className="space-y-2">
+            <h2 className="text-sm font-mono font-bold uppercase tracking-[0.4em] text-primary/80">Buffer Empty</h2>
+            <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest max-w-[240px] opacity-60">
+              No active task protocols detected in the current sector.
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );

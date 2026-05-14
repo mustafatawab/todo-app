@@ -13,9 +13,14 @@ const LogoutButton = () => {
         router.push('/login')
     }   
   return (
-    <div>
-        <Button className='cursor-pointer w-full' onClick={logout} variant={"destructive"}><LogOutIcon /></Button>
-    </div>
+    <Button 
+      className="w-full justify-start h-10 px-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-all duration-200 group" 
+      onClick={logout} 
+      variant="ghost"
+    >
+      <LogOutIcon className="w-4 h-4 mr-2.5 opacity-60 group-hover:opacity-100 transition-opacity" />
+      <span className="font-medium text-sm">Sign Out</span>
+    </Button>
   )
 }
 
