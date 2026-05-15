@@ -41,3 +41,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+./backedn-nodejs/.env
+./backedn-nodejs/.env.local
+
+./frontend/.env
+./frontend/.env.local
