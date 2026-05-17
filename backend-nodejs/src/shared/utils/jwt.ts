@@ -3,7 +3,7 @@ import type { SignOptions } from "jsonwebtoken";
 import { env } from "../config/env";
 
 export interface TokenPayload {
-  userId: number;
+  userId: string;
   email: string;
 }
 
