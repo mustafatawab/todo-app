@@ -27,10 +27,10 @@ import { getAllTasks } from "@/lib/getAllTasks";
 
 const UpdateTask = ({
   data,
-  userId
+  userId,
 }: {
   data: { id: String; title: String; description: String };
-  userId : String;
+  userId: String;
 }) => {
   const [taskForm, setTaskForm] = useState({
     title: data.title,
@@ -90,15 +90,14 @@ const UpdateTask = ({
       existingTasks = updatedTasks;
       localStorage.setItem("tasks", JSON.stringify(existingTasks));
 
-      setTaskForm({ title: "", description: "" }); 
-      getAllTasks(userId)
-      setOpen(false); 
+      setTaskForm({ title: "", description: "" });
+      getAllTasks(userId);
+      setOpen(false);
     } catch (error) {
       toast.error(error as string);
     } finally {
       setLoading(false);
-      window.location.reload()
-
+      window.location.reload();
     }
   };
   return (
@@ -127,12 +126,16 @@ const UpdateTask = ({
               ))}
             </div>
           </div>
-          
+
           <div className="p-8 space-y-8">
             <div className="space-y-3">
               <div className="flex justify-between items-end">
-                <Label className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-primary">01_Subject_Override</Label>
-                <span className="text-[9px] font-mono text-muted-foreground opacity-40 italic">ID_Verified</span>
+                <Label className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-primary">
+                  01_Subject_Override
+                </Label>
+                <span className="text-[9px] font-mono text-muted-foreground opacity-40 italic">
+                  ID_Verified
+                </span>
               </div>
               <Input
                 className="w-full bg-secondary/20 border-border/60 focus:border-primary focus:bg-white transition-all duration-200 rounded-none px-4 h-12 font-mono text-sm"
@@ -145,7 +148,9 @@ const UpdateTask = ({
               />
             </div>
             <div className="space-y-3">
-              <Label className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-primary">02_Protocol_Details</Label>
+              <Label className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-primary">
+                02_Protocol_Details
+              </Label>
               <Textarea
                 name="description"
                 value={taskForm.description as string}

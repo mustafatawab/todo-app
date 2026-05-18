@@ -4,19 +4,15 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { PrismaClient } from "@/generated/prisma";
 
-
 export const register = async (
   name: string,
   email: string,
-  password: string
+  password: string,
 ) => {
-
-
   const prisma = new PrismaClient();
   const existingUser = await prisma.user.findUnique({
     where: { email: email },
   });
-  
 
   if (existingUser) {
     return {
@@ -62,7 +58,7 @@ export const login = async (email: string, password: string) => {
         callbackURL: "/",
       },
     });
-    
+
     return {
       status: 200,
       message: "You are logged in.....",

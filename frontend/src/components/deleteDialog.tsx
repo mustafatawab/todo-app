@@ -19,7 +19,7 @@ import toast from "react-hot-toast";
 export function DeleteDialog({
   children,
   id,
-  userId
+  userId,
 }: {
   children: React.ReactNode;
   id: String;
@@ -36,15 +36,14 @@ export function DeleteDialog({
         body: JSON.stringify({ id }),
       });
       const data = await res.json();
-      toast.success("Deleted Successfully !!!")
+      toast.success("Deleted Successfully !!!");
       setOpen(false);
-      await getAllTasks(userId)
+      await getAllTasks(userId);
     } catch (error) {
-      toast.error("Something went wrong")
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
-      window.location.reload()
-
+      window.location.reload();
     }
   };
 
@@ -72,20 +71,22 @@ export function DeleteDialog({
 
         <div className="p-8">
           <p className="text-xs font-mono text-foreground/70 leading-relaxed uppercase tracking-tight">
-            Warning: You are about to terminate this task protocol. All associated data fragments will be purged from the orbital servers. This action cannot be rescinded.
+            Warning: You are about to terminate this task protocol. All
+            associated data fragments will be purged from the orbital servers.
+            This action cannot be rescinded.
           </p>
         </div>
 
         <AlertDialogFooter className="bg-secondary/10 px-8 py-6 border-t border-border/40 flex items-center gap-4">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleCancel}
             className="bg-transparent hover:bg-secondary/50 border border-border/60 rounded-none h-11 px-8 text-[10px] font-mono font-bold uppercase tracking-[0.2em] transition-all duration-200"
           >
             Abort_Purge
           </Button>
-          <Button 
-            disabled={loading} 
+          <Button
+            disabled={loading}
             onClick={handleDelete}
             className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-none h-11 px-10 text-[10px] font-mono font-bold uppercase tracking-[0.2em] shadow-lg shadow-destructive/20 transition-all duration-300 active:scale-[0.98] disabled:opacity-50"
           >

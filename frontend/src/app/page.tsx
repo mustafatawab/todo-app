@@ -28,7 +28,9 @@ export default async function Home() {
           <div className="space-y-1">
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2 h-2 bg-primary animate-pulse" />
-              <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-primary uppercase">System Online</span>
+              <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-primary uppercase">
+                System Online
+              </span>
             </div>
             <h1 className="text-4xl font-black tracking-tighter uppercase italic leading-none">
               Command <span className="text-primary/80">Center</span>
@@ -37,13 +39,17 @@ export default async function Home() {
               Orbital Task Management Protocol v1.0
             </p>
           </div>
-          
+
           <div className="flex items-center gap-6">
             <AddTask userId={session.user.id} />
             <div className="flex items-center gap-3 pl-6 border-l border-border/40">
               <div className="text-right hidden sm:block">
-                <p className="text-[10px] font-mono font-bold uppercase tracking-tight leading-none mb-1">Operator</p>
-                <p className="text-xs font-medium opacity-80">{session.user.name}</p>
+                <p className="text-[10px] font-mono font-bold uppercase tracking-tight leading-none mb-1">
+                  Operator
+                </p>
+                <p className="text-xs font-medium opacity-80">
+                  {session.user.name}
+                </p>
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger className="focus:outline-none group">
@@ -58,11 +64,20 @@ export default async function Home() {
                     </div>
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 p-0 rounded-none border border-primary/20 bg-background/95 backdrop-blur-xl shadow-2xl shadow-primary/5">
+                <DropdownMenuContent
+                  align="end"
+                  className="w-64 p-0 rounded-none border border-primary/20 bg-background/95 backdrop-blur-xl shadow-2xl shadow-primary/5"
+                >
                   <div className="p-4 border-b border-border/40 bg-secondary/20">
-                    <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary/60 mb-2">Security ID</p>
-                    <p className="text-sm font-bold truncate tracking-tight">{session.user.name}</p>
-                    <p className="text-[10px] font-mono text-muted-foreground truncate mt-1">{session.user.email}</p>
+                    <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary/60 mb-2">
+                      Security ID
+                    </p>
+                    <p className="text-sm font-bold truncate tracking-tight">
+                      {session.user.name}
+                    </p>
+                    <p className="text-[10px] font-mono text-muted-foreground truncate mt-1">
+                      {session.user.email}
+                    </p>
                   </div>
                   <div className="p-2">
                     <LogoutButton />
@@ -77,7 +92,9 @@ export default async function Home() {
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="h-px w-8 bg-primary/40" />
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] opacity-50">Active Protocols</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] opacity-50">
+                Active Protocols
+              </span>
             </div>
           </div>
           <TaskList userId={session.user.id} />

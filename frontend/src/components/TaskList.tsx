@@ -53,7 +53,9 @@ const TaskList = ({ userId }: { userId: String }) => {
             </div>
           </div>
           <div className="space-y-2">
-            <h2 className="text-sm font-mono font-bold uppercase tracking-[0.4em] text-primary/80">Buffer Empty</h2>
+            <h2 className="text-sm font-mono font-bold uppercase tracking-[0.4em] text-primary/80">
+              Buffer Empty
+            </h2>
             <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest max-w-[240px] opacity-60">
               No active task protocols detected in the current sector.
             </p>

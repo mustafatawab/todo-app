@@ -40,8 +40,6 @@ const page = () => {
     setShowPass(e.target.checked);
   };
 
-
-  
   const signInEmail = async (e: any) => {
     e.preventDefault();
     const { email, password } = form;
@@ -62,7 +60,6 @@ const page = () => {
     }
   };
 
-
   const socialSignIn = async (provider: "github" | "google") => {
     const res = await socialLogin(provider);
   };
@@ -70,11 +67,16 @@ const page = () => {
   return (
     <main className="px-5 w-full min-h-screen flex flex-col items-center justify-center bg-background relative overflow-hidden">
       {/* Futurist Grid Background */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-        style={{ backgroundImage: 'linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px)', backgroundSize: '40px 40px' }} 
+      <div
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, var(--primary) 1px, transparent 1px), linear-gradient(to bottom, var(--primary) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
       />
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-      
+
       <Card className="w-full md:w-[480px] border border-primary/20 rounded-none shadow-2xl bg-background/40 backdrop-blur-3xl relative">
         {/* Tech Decor */}
         <div className="absolute top-0 left-0 w-12 h-px bg-primary/40" />
@@ -88,20 +90,21 @@ const page = () => {
               <div className="w-6 h-6 border-2 border-primary animate-pulse" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-black uppercase tracking-[0.3em] text-foreground/90">Authentication</CardTitle>
+          <CardTitle className="text-2xl font-black uppercase tracking-[0.3em] text-foreground/90">
+            Authentication
+          </CardTitle>
           <CardDescription className="text-[10px] font-mono uppercase tracking-[0.2em] text-primary/60">
             Protocol: Secure Orbital Access v4.2
           </CardDescription>
         </CardHeader>
 
         <CardContent className="px-10 py-10">
-          <form
-            action=""
-            onSubmit={signInEmail}
-            className="space-y-8"
-          >
+          <form action="" onSubmit={signInEmail} className="space-y-8">
             <div className="space-y-3">
-              <Label htmlFor="email" className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary ml-1">
+              <Label
+                htmlFor="email"
+                className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary ml-1"
+              >
                 Identity_Email
               </Label>
               <Input
@@ -117,7 +120,10 @@ const page = () => {
             </div>
 
             <div className="space-y-3">
-              <Label htmlFor="password" className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary ml-1">
+              <Label
+                htmlFor="password"
+                className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary ml-1"
+              >
                 Access_Key
               </Label>
               <Input
@@ -139,7 +145,10 @@ const page = () => {
                 checked={showPass}
                 className="rounded-none border-primary/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
-              <Label htmlFor="toggle" className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground cursor-pointer select-none opacity-60 hover:opacity-100 transition-opacity">
+              <Label
+                htmlFor="toggle"
+                className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground cursor-pointer select-none opacity-60 hover:opacity-100 transition-opacity"
+              >
                 Reveal Key
               </Label>
             </div>
@@ -157,7 +166,9 @@ const page = () => {
               <Separator className="w-full bg-primary/10" />
             </div>
             <div className="relative flex justify-center text-[9px] font-mono uppercase tracking-[0.2em]">
-              <span className="bg-background px-4 text-primary/40">External_Bridges</span>
+              <span className="bg-background px-4 text-primary/40">
+                External_Bridges
+              </span>
             </div>
           </div>
 
@@ -167,8 +178,16 @@ const page = () => {
               variant="outline"
               className="h-12 border-primary/20 hover:bg-primary/5 rounded-none transition-all duration-300 group"
             >
-              <Image src={"/google.png"} alt="Google" width={18} height={18} className="mr-3 opacity-40 group-hover:opacity-100 transition-opacity" />
-              <span className="text-[10px] font-mono font-bold uppercase tracking-tighter">Google</span>
+              <Image
+                src={"/google.png"}
+                alt="Google"
+                width={18}
+                height={18}
+                className="mr-3 opacity-40 group-hover:opacity-100 transition-opacity"
+              />
+              <span className="text-[10px] font-mono font-bold uppercase tracking-tighter">
+                Google
+              </span>
             </Button>
             <Button
               onClick={() => socialLogin("github")}
@@ -176,7 +195,9 @@ const page = () => {
               className="h-12 border-primary/20 hover:bg-primary/5 rounded-none transition-all duration-300 group"
             >
               <FaGithub className="w-4 h-4 mr-3 opacity-40 group-hover:opacity-100 transition-opacity" />
-              <span className="text-[10px] font-mono font-bold uppercase tracking-tighter">GitHub</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-tighter">
+                GitHub
+              </span>
             </Button>
           </div>
         </CardContent>
@@ -184,7 +205,10 @@ const page = () => {
           <div className="w-full h-px bg-primary/10 mb-6" />
           <p className="text-[10px] font-mono text-center text-muted-foreground uppercase tracking-widest">
             New operator?{" "}
-            <Link href={"/register"} className="font-bold text-primary hover:underline underline-offset-4">
+            <Link
+              href={"/register"}
+              className="font-bold text-primary hover:underline underline-offset-4"
+            >
               Register_ID
             </Link>{" "}
           </p>

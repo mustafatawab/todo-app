@@ -26,7 +26,7 @@ import Image from "next/image";
 
 const page = () => {
   const ref = useRef<HTMLFormElement>(null);
-  const router = useRouter()
+  const router = useRouter();
   const [showPass, setShowPass] = useState<boolean>(false);
   const [form, setForm] = useState({
     name: "",
@@ -41,7 +41,6 @@ const page = () => {
       ...form,
       [name]: value,
     });
-
   };
 
   const onCheckboxChange = (e: any) => {
@@ -62,26 +61,25 @@ const page = () => {
     }
 
     const res = await register(name, email, password);
-    localStorage.removeItem("tasks")
+    localStorage.removeItem("tasks");
     if (res.status == 200) {
       toast.success(res.message);
       ref.current?.reset();
-      router.push("/")
+      router.push("/");
       setForm({
         name: "",
         email: "",
         password: "",
         confirm_password: "",
       });
-    }else if(res.status == 401){
-      toast.error(res.message)
+    } else if (res.status == 401) {
+      toast.error(res.message);
     }
   };
 
-
   const socialSignIn = async (provider: "github" | "google") => {
-    const res = await socialLogin(provider)
-  }
+    const res = await socialLogin(provider);
+  };
 
   return (
     <main className="px-5 w-full min-h-screen flex items-center justify-center">
@@ -135,7 +133,7 @@ const page = () => {
                 value={form.password}
                 onChange={handleChange}
                 id="password"
-               type={showPass ? "text" : "password"}
+                type={showPass ? "text" : "password"}
                 placeholder="Password"
                 className="focus:bg-slate-100 focus:border-none"
                 required
@@ -184,12 +182,19 @@ const page = () => {
           <span>OR</span>
 
           <div className="flex flex-wrap md:flex-nowrap  justify-center items-center gap-2 w-3/4 md:w-1/2">
-
-            <Button onClick={() => socialSignIn("google")} variant="outline" className="w-full">
-            <Image src={'/google.png'} alt="Google" width={20} height={20} />
+            <Button
+              onClick={() => socialSignIn("google")}
+              variant="outline"
+              className="w-full"
+            >
+              <Image src={"/google.png"} alt="Google" width={20} height={20} />
             </Button>
-            <Button onClick={() => socialLogin("github")} variant="outline" className="w-full">
-            <FaGithub className="w-[24px] h-[24px]"/>
+            <Button
+              onClick={() => socialLogin("github")}
+              variant="outline"
+              className="w-full"
+            >
+              <FaGithub className="w-[24px] h-[24px]" />
             </Button>
           </div>
         </CardFooter>

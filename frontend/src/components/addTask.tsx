@@ -80,12 +80,14 @@ const AddTask = ({ userId }: { userId: String }) => {
       const existingTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
       localStorage.setItem(
         "tasks",
-        JSON.stringify([result.task, ...existingTasks])
+        JSON.stringify([result.task, ...existingTasks]),
       );
 
       // notify other client components so they can update immediately
       if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("taskAdded", { detail: result.task }));
+        window.dispatchEvent(
+          new CustomEvent("taskAdded", { detail: result.task }),
+        );
       }
 
       setOpen(false); // 🔹 close dialog only if success
@@ -109,7 +111,9 @@ const AddTask = ({ userId }: { userId: String }) => {
             <FaPlus className="w-3 h-3" />
             <div className="absolute -top-1 -left-1 w-1 h-1 bg-white/40" />
           </div>
-          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em]">Initialize Task</span>
+          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em]">
+            Initialize Task
+          </span>
         </Button>
         <AlertDialogContent className="max-w-md p-0 rounded-none border border-primary/30 bg-background/95 backdrop-blur-2xl shadow-2xl">
           <div className="bg-secondary/30 px-6 py-5 border-b border-primary/20 flex justify-between items-center">
@@ -127,12 +131,16 @@ const AddTask = ({ userId }: { userId: String }) => {
               ))}
             </div>
           </div>
-          
+
           <div className="p-8 space-y-8">
             <div className="space-y-3">
               <div className="flex justify-between items-end">
-                <Label className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-primary">01_Subject</Label>
-                <span className="text-[9px] font-mono text-muted-foreground opacity-40 italic">Required_Field</span>
+                <Label className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-primary">
+                  01_Subject
+                </Label>
+                <span className="text-[9px] font-mono text-muted-foreground opacity-40 italic">
+                  Required_Field
+                </span>
               </div>
               <Input
                 className="w-full bg-secondary/20 border-border/60 focus:border-primary focus:bg-white transition-all duration-200 rounded-none px-4 h-12 font-mono text-sm"
@@ -144,7 +152,9 @@ const AddTask = ({ userId }: { userId: String }) => {
               />
             </div>
             <div className="space-y-3">
-              <Label className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-primary">02_Protocol_Details</Label>
+              <Label className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-primary">
+                02_Protocol_Details
+              </Label>
               <Textarea
                 name="description"
                 onChange={handleChange}
