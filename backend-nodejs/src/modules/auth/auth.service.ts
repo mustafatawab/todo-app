@@ -119,23 +119,22 @@ export const refreshAccessToken = async (
   return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 };
 
+export const userLogout = async (userId: string) => {
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
 
-export const userLogout = async (userId : string) => {
-    const existingUser = await prisma.user.findUnique({
-        where : {
-            id : userId
-        }
-    })
+  if (!existingUser) {
+    throw new AppError("User not found", 404);
+  }
 
-    if(!existingUser){
-        throw new AppError("User not found", 404)
-    }
+  await prisma.session.deleteMany({
+    where: {
+      userId,
+    },
+  });
 
-    await prisma.session.deleteMany({
-        where : {
-            userId
-        }
-    })
-
-    return { message : "Logged out successfully" }
-}
+  return { message: "Logged out successfully" };
+};
