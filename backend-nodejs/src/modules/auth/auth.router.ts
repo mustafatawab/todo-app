@@ -9,14 +9,12 @@ import { authMiddleware } from "../../shared/middleware/auth.middleware";
 
 const router = Router();
 
-
 /*
-*  @openapi
-*  tags:
-*    name: Auth
-*    description: Authentication and Authorization endpoints
-*/
-
+ *  @openapi
+ *  tags:
+ *    name: Auth
+ *    description: Authentication and Authorization endpoints
+ */
 
 /*
 
@@ -47,7 +45,6 @@ const router = Router();
 *                  description: The user's password
 */
 router.post("/register", userRegisterationHandler);
-
 
 router.post("/login", userLoginHandler);
 router.post("/logout", authMiddleware, userLogoutHandler);

@@ -9,7 +9,6 @@ export const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api-docs" , swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/auth", authRouter);
-
