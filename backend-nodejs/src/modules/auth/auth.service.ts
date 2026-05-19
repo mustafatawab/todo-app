@@ -121,7 +121,6 @@ export const refreshAccessToken = async (
   return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 };
 
-// User Logout Service
 export const userLogout = async (userId: string) => {
   const existingUser = await prisma.user.findUnique({
     where: {
