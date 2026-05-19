@@ -9,6 +9,7 @@ import {
   verifyRefreshToken,
 } from "../../shared/utils/jwt";
 
+// User Registration Service
 export const userRegisteration = async (input: RegisterInput) => {
   const { name, email, password } = input;
 
@@ -35,7 +36,7 @@ export const userRegisteration = async (input: RegisterInput) => {
   return user;
 };
 
-// User Login Function
+// User Login Service
 
 export const userLogin = async (
   input: LoginInput,
@@ -81,6 +82,7 @@ export const userLogin = async (
   return { user: userWithoutPassword, accessToken, refreshToken };
 };
 
+// Refresh Access Token Service
 export const refreshAccessToken = async (
   token: string,
   ipAddress: string,
@@ -119,6 +121,7 @@ export const refreshAccessToken = async (
   return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 };
 
+// User Logout Service
 export const userLogout = async (userId: string) => {
   const existingUser = await prisma.user.findUnique({
     where: {
