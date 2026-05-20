@@ -16,7 +16,7 @@ const options: swaggerJSDoc.Options = {
       },
     ],
     components: {
-      secuiritySchemes: {
+      securitySchemes: {
         cookieAuth: {
           type: "apiKey",
           in: "cookie",
@@ -27,7 +27,7 @@ const options: swaggerJSDoc.Options = {
     },
   },
 
-  apis: ["./src/modules/**/*.ts", "./app.ts"],
+  apis: ["./src/modules/**/*.ts", "./api.ts"],
 };
 
 export const swaggerSpec = swaggerJSDoc(options);

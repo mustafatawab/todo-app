@@ -1,13 +1,22 @@
-import { registerSchema, loginSchema } from "./auth.schema";
+import {
+  registerSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+} from "./auth.schema";
 import type { Request, Response, NextFunction } from "express";
 import {
   userRegisteration,
   userLogin,
   refreshAccessToken,
   userLogout,
+  forgotPassword,
+  resetPassword,
 } from "./auth.service";
 import { AppError } from "../../shared/error/AppError";
 import crypto from "crypto";
+import { generateCsrfToken } from "../../shared/middleware/csrf.middleware";
+import { setCsrfTokenCookie } from "../../shared/middleware/csrf.middleware";
 
 // User Registration Controller
 export const userRegisterationHandler = async (
@@ -59,19 +68,20 @@ export const userLoginHandler = async (
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    const csrfToken = crypto.randomBytes(24).toString("hex");
+    // const csrfToken = crypto.randomBytes(24).toString("hex");
 
-    res.cookie("csrfToken", csrfToken, {
-      httpOnly: false,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite: "strict",
-    });
+    // res.cookie("csrfToken", csrfToken, {
+    //   httpOnly: false,
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    //   sameSite: "strict",
+    // });
+
+    const csfToken = generateCsrfToken();
+    setCsrfTokenCookie(res, csfToken);
 
     return res.status(200).json({
       message: "User logged in successfully",
       user,
-      accessToken,
-      refreshToken,
     });
   } catch (error) {
     next(error);
@@ -127,7 +137,8 @@ export const refreshAccessTokenHandler = async (
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    const csrfToken = crypto.randomBytes(24).toString("hex");
+    const csrfToken = generateCsrfToken();
+    setCsrfTokenCookie(res, csrfToken);
 
     res.cookie("csrfToken", csrfToken, {
       httpOnly: false,
@@ -136,6 +147,38 @@ export const refreshAccessTokenHandler = async (
     });
 
     return res.status(200).json({ accessToken, refreshToken: newRefreshToken });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const forgotPasswordHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const validatedData = forgotPasswordSchema.parse(req.body);
+
+    const result = await forgotPassword(validatedData);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPasswordHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const validatedData = resetPasswordSchema.parse(req.body);
+
+    const result = await resetPassword(validatedData);
+
+    return res.status(200).json(result);
   } catch (error) {
     next(error);
   }

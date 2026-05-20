@@ -23,6 +23,7 @@ model User {
   updatedAt     DateTime  @default(now()) @updatedAt
   sessions      Session[]
   tasks         Task[]
+  passwordResets PasswordReset[]
 
   @@map("user")
 }
@@ -49,4 +50,19 @@ model Task {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
+
+  @@map("task")
+}
+
+
+model PasswordReset {
+  id       String    @id @default(uuid())
+  token     String    @unique
+  expiresAt DateTime
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+
+
+  @@map("password_reset")
 }
