@@ -1,5 +1,7 @@
 name: Auto Format
-on: [push]
+on:
+  push:
+    branches: [main, master]
 jobs:
   format:
     runs-on: ubuntu-latest
@@ -8,7 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
       - run: npx prettier --write .
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "style: auto-format code"
+          commit_message: "style: auto-format code [skip ci]"

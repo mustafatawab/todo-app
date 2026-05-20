@@ -16,7 +16,7 @@ const router = Router();
  *    description: Authentication and Authorization endpoints
  */
 
-/*
+/**
 
 *  @openapi
 *  /auth/register:

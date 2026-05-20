@@ -1,3 +1,4 @@
+import "dotenv/config"
 import { app } from "./api";
 import { env } from "./src/shared/config/env";
 
