@@ -85,7 +85,7 @@ export const userLogoutHandler = async (
   next: NextFunction,
 ) => {
   try {
-    await userLogout(req.user?.userId);
+    await userLogout(req.user!.userId);
     res.clearCookie("refreshToken");
     res.clearCookie("accessToken");
     res.clearCookie("csrfToken");

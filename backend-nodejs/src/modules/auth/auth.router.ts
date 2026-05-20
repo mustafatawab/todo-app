@@ -22,7 +22,7 @@ const router = Router();
 *  /auth/register:
 *    post:
 *      summary: Register a new user
-*      tags: [Auth]
+*      tags: [ Auth ]
 *      requestBody:
 *        required: true
 *        content:
@@ -43,11 +43,74 @@ const router = Router();
 *                password:
 *                  type: string
 *                  description: The user's password
+*          
+*      responses:
+*         201:
+*           description: User created Successfully
+*         400:
+*           description: Bad Request        
+*              
+*              
+*              
 */
 router.post("/register", userRegisterationHandler);
 
+/**
+ * @openapi
+ * /auth/login:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Login a user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Logged in successfully
+ *       401:
+ *         description: Invalid credentials
+ */
 router.post("/login", userLoginHandler);
+
+/**
+ * @openapi
+ * /auth/logout:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Logout the current user
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ */
 router.post("/logout", authMiddleware, userLogoutHandler);
+
+/**
+ * @openapi
+ * /auth/refresh-token:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Refresh the access token
+ *     responses:
+ *       200:
+ *         description: Access token refreshed successfully
+ */
+
 router.post("/refresh-token", refreshAccessTokenHandler);
 
 export { router as authRouter };
