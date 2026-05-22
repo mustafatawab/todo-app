@@ -32,7 +32,7 @@ export const userRegisterationHandler = async (
       .status(201)
       .json({ message: "User registered successfully", user });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -84,7 +84,7 @@ export const userLoginHandler = async (
       user,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -101,7 +101,7 @@ export const userLogoutHandler = async (
     res.clearCookie("csrfToken");
     return res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -148,7 +148,7 @@ export const refreshAccessTokenHandler = async (
 
     return res.status(200).json({ accessToken, refreshToken: newRefreshToken });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -164,7 +164,7 @@ export const forgotPasswordHandler = async (
 
     return res.status(200).json(result);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -180,6 +180,6 @@ export const resetPasswordHandler = async (
 
     return res.status(200).json(result);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
