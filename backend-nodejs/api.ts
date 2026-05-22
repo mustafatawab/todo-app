@@ -20,9 +20,9 @@ app.use(cookieParser());
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use(csrfMiddleware)
+app.use("/api" ,csrfMiddleware)
 
-app.use("/auth", authRouter);
+app.use("/api/auth", authRouter);
 
 
 app.use(authMiddleware)

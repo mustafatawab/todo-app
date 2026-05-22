@@ -6,6 +6,7 @@ import {
   userRegisterationHandler,
   forgotPasswordHandler,
   resetPasswordHandler,
+  getMeHandler
 } from "./auth.controller";
 import { authMiddleware } from "../../shared/middleware/auth.middleware";
 
@@ -20,7 +21,7 @@ const router = Router();
 
 /**
  * @openapi
- * /auth/register:
+ * /api/auth/register:
  *   post:
  *     tags:
  *       - Auth
@@ -55,7 +56,7 @@ router.post("/register", userRegisterationHandler);
 
 /**
  * @openapi
- * /auth/login:
+ * /api/auth/login:
  *   post:
  *     tags:
  *       - Auth
@@ -84,7 +85,7 @@ router.post("/login", userLoginHandler);
 
 /**
  * @openapi
- * /auth/logout:
+ * /api/auth/logout:
  *   post:
  *     tags:
  *       - Auth
@@ -97,9 +98,27 @@ router.post("/login", userLoginHandler);
  */
 router.post("/logout", authMiddleware, userLogoutHandler);
 
+
+
 /**
  * @openapi
- * /auth/refresh-token:
+ * /api/auth/me
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Get Current User
+ *     security:
+ *        - cookieAuth: []
+ *     responses:
+ *        '200':
+ *           description: Get the current user.
+ * 
+ */
+router.get("/me" , authMiddleware, getMeHandler)
+
+/**
+ * @openapi
+ * /api/auth/refresh-token:
  *   post:
  *     tags:
  *       - Auth
@@ -112,7 +131,7 @@ router.post("/refresh-token", refreshAccessTokenHandler);
 
 /**
  * @openapi
- * /auth/forgot-password:
+ * /api/auth/forgot-password:
  *   post:
  *     tags:
  *       - Auth
@@ -138,7 +157,7 @@ router.post("/forgot-password", forgotPasswordHandler);
 
 /**
  * @openapi
- * /auth/reset-password:
+ * /api/auth/reset-password:
  *   post:
  *     tags:
  *       - Auth
@@ -164,5 +183,8 @@ router.post("/forgot-password", forgotPasswordHandler);
  *         description: Bad Request
  */
 router.post("/reset-password", resetPasswordHandler);
+
+
+
 
 export { router as authRouter };

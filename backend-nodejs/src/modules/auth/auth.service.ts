@@ -218,3 +218,16 @@ export const resetPassword = async (input: ResetPasswordInput) => {
 
   return { message: "Password has been reset successfully" };
 };
+
+export const getMe = async (userId: string) => {
+  const user = prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+  // const { password, ...withOutPassword } = user;
+
+  return user;
+};

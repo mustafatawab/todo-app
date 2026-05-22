@@ -12,6 +12,7 @@ import {
   userLogout,
   forgotPassword,
   resetPassword,
+  getMe,
 } from "./auth.service";
 import { AppError } from "../../shared/error/AppError";
 import crypto from "crypto";
@@ -179,6 +180,24 @@ export const resetPasswordHandler = async (
     const result = await resetPassword(validatedData);
 
     return res.status(200).json(result);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const getMeHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user!.userId;
+    if (!userId) {
+      throw new AppError("Unauthorized - no user in request", 401);
+    }
+    const user = await getMe(userId);
+
+    return res.status(200).json(user);
   } catch (error) {
     return next(error);
   }
