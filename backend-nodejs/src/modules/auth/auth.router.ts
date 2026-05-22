@@ -6,7 +6,7 @@ import {
   userRegisterationHandler,
   forgotPasswordHandler,
   resetPasswordHandler,
-  getMeHandler
+  getMeHandler,
 } from "./auth.controller";
 import { authMiddleware } from "../../shared/middleware/auth.middleware";
 
@@ -98,8 +98,6 @@ router.post("/login", userLoginHandler);
  */
 router.post("/logout", authMiddleware, userLogoutHandler);
 
-
-
 /**
  * @openapi
  * /api/auth/me
@@ -112,9 +110,9 @@ router.post("/logout", authMiddleware, userLogoutHandler);
  *     responses:
  *        '200':
  *           description: Get the current user.
- * 
+ *
  */
-router.get("/me" , authMiddleware, getMeHandler)
+router.get("/me", authMiddleware, getMeHandler);
 
 /**
  * @openapi
@@ -183,8 +181,5 @@ router.post("/forgot-password", forgotPasswordHandler);
  *         description: Bad Request
  */
 router.post("/reset-password", resetPasswordHandler);
-
-
-
 
 export { router as authRouter };
