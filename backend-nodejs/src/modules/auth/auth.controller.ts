@@ -141,11 +141,11 @@ export const refreshAccessTokenHandler = async (
     const csrfToken = generateCsrfToken();
     setCsrfTokenCookie(res, csrfToken);
 
-    res.cookie("csrfToken", csrfToken, {
-      httpOnly: false,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite: "strict",
-    });
+    // res.cookie("csrfToken", csrfToken, {
+    //   httpOnly: false,
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    //   sameSite: "strict",
+    // });
 
     return res.status(200).json({ accessToken, refreshToken: newRefreshToken });
   } catch (error) {

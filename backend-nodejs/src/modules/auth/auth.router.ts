@@ -98,10 +98,12 @@ router.post("/login", userLoginHandler);
  */
 router.post("/logout", authMiddleware, userLogoutHandler);
 
+
+
 /**
  * @openapi
- * /api/auth/me
- *   post:
+ * /api/auth/me:
+ *   get:
  *     tags:
  *       - Auth
  *     summary: Get Current User
@@ -113,6 +115,10 @@ router.post("/logout", authMiddleware, userLogoutHandler);
  *
  */
 router.get("/me", authMiddleware, getMeHandler);
+
+
+
+
 
 /**
  * @openapi

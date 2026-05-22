@@ -18,7 +18,7 @@ const CSRF_SAFE_PATH = [
   "/api/auth/register",
   "/api/auth/login",
   "/api/auth/refresh-token",
-  "/api/auth/reset-token",
+  "/api/auth/reset-password",
   "/api/forgot-password",
 ];
 
