@@ -4,9 +4,14 @@ import {
   updateTodoHandler,
   completeTodoHandler,
   deleteTodoHandler,
+  listAllTodoHandler
+
 } from "./todo.controller";
 
 const router = Router();
+
+
+router.get("/" , listAllTodoHandler)
 
 router.post("/", createTodoHandler);
 

@@ -7,6 +7,7 @@ export const generateCsrfToken = () => {
 };
 
 export const setCsrfTokenCookie = (res: Response, csrfToken: string) => {
+  console.log("CSRF Token is " , csrfToken)
   res.cookie("csrfToken", csrfToken, {
     httpOnly: false,
     maxAge: 7 * 24 * 60 * 60 * 1000,

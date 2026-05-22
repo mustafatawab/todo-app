@@ -9,8 +9,27 @@ import {
   updateTodo,
   completeTodo,
   deleteTodo,
+  listAllTodo
 } from "./todo.service";
 import { AppError } from "../../shared/error/AppError";
+
+export const listAllTodoHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+    try {
+        const userId = req.user!.userId;
+
+        const result = await listAllTodo(userId)
+
+        return res.status(200).json(result)
+        
+    } catch (error) {
+        
+    }
+
+};
 
 export const createTodoHandler = async (
   req: Request,
@@ -66,7 +85,6 @@ export const completeTodoHandler = async (
     return next(error);
   }
 };
-
 
 // Delete Todo
 
