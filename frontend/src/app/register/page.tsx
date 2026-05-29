@@ -20,8 +20,13 @@ import toast from "react-hot-toast";
 import Image from "next/image";
 import { FaGithub } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { useRegisterUser } from "@/hooks/useAuth";
+
 const page = () => {
   const [showPass, setShowPass] = useState<boolean>(false);
+
+  const registerMutation = useRegisterUser();
+
   const router = useRouter();
   const [form, setForm] = useState({
     name: "",
@@ -41,9 +46,11 @@ const page = () => {
     setShowPass(e.target.checked);
   };
 
-  const signInEmail = async (e: any) => {
+  const registerUser = async (e: any) => {
     e.preventDefault();
-    
+
+    await registerMutation.mutateAsync(form);
+
     // const { email, password } = form;
 
     // const res = await login(email, password);
@@ -101,8 +108,8 @@ const page = () => {
         </CardHeader>
 
         <CardContent className="px-10 py-10">
-          <form action="" onSubmit={signInEmail} className="space-y-8">
-             <div className="space-y-3">
+          <form onSubmit={registerUser} className="space-y-8">
+            <div className="space-y-3">
               <Label
                 htmlFor="email"
                 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary ml-1"
@@ -120,7 +127,7 @@ const page = () => {
                 required
               />
             </div>
-            
+
             <div className="space-y-3">
               <Label
                 htmlFor="email"
@@ -195,7 +202,6 @@ const page = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <Button
-              
               variant="outline"
               className="h-12 border-primary/20 hover:bg-primary/5 rounded-none transition-all duration-300 group"
             >
@@ -211,7 +217,6 @@ const page = () => {
               </span>
             </Button>
             <Button
-              
               variant="outline"
               className="h-12 border-primary/20 hover:bg-primary/5 rounded-none transition-all duration-300 group"
             >

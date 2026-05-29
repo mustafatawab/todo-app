@@ -12,11 +12,10 @@ const loginUser = async (data: any) => {
   return res.data;
 };
 
-
 const getCurrentUser = async () => {
-    const res = await api.get("/api/auth/me")
-    return res.data
-}
+  const res = await api.get("/api/auth/me");
+  return res.data;
+};
 
 export function useRegisterUser() {
   const queryClient = useQueryClient();
@@ -44,12 +43,9 @@ export function useLoginUser() {
   });
 }
 
-
 export function useGetCurrentUser() {
-    
-
-    return useQuery({
-        queryFn : getCurrentUser,
-        queryKey : ["auth"]
-    })
+  return useQuery({
+    queryFn: getCurrentUser,
+    queryKey: ["auth"],
+  });
 }
