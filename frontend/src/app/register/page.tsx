@@ -21,11 +21,12 @@ import Image from "next/image";
 import { FaGithub } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useRegisterUser } from "@/hooks/useAuth";
+import { Loader2Icon } from "lucide-react";
 
 const page = () => {
   const [showPass, setShowPass] = useState<boolean>(false);
 
-  const registerMutation = useRegisterUser();
+  const { mutate, isPending, isError, error } = useRegisterUser();
 
   const router = useRouter();
   const [form, setForm] = useState({
@@ -46,10 +47,18 @@ const page = () => {
     setShowPass(e.target.checked);
   };
 
-  const registerUser = async (e: any) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
-    await registerMutation.mutateAsync(form);
+    mutate(form, {
+      onSuccess: () => {
+        setForm({
+          name: "",
+          email: "",
+          password: "",
+        });
+      },
+    });
 
     // const { email, password } = form;
 
@@ -108,7 +117,7 @@ const page = () => {
         </CardHeader>
 
         <CardContent className="px-10 py-10">
-          <form onSubmit={registerUser} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-3">
               <Label
                 htmlFor="email"
@@ -180,12 +189,17 @@ const page = () => {
                 Reveal Key
               </Label>
             </div>
-
+            {isError && <p className="text-red-500">{error.message}</p>}
             <Button
+              disabled={isPending}
               type="submit"
               className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-mono font-black uppercase tracking-[0.3em] rounded-none shadow-[0_0_30px_rgba(var(--primary),0.15)] transition-all duration-300 active:scale-[0.98]"
             >
-              Initialize_Login
+              {isPending ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                "Register"
+              )}
             </Button>
           </form>
 
@@ -230,13 +244,13 @@ const page = () => {
         <CardFooter className="flex flex-col gap-4 pb-12 pt-0 px-10">
           <div className="w-full h-px bg-primary/10 mb-6" />
           <p className="text-[10px] font-mono text-center text-muted-foreground uppercase tracking-widest">
-            New operator?{" "}
+            Already operator?{" "}
             <Link
-              href={"/register"}
+              href={"/login"}
               className="font-bold text-primary hover:underline underline-offset-4"
             >
-              Register_ID
-            </Link>{" "}
+              Login
+            </Link>
           </p>
         </CardFooter>
       </Card>

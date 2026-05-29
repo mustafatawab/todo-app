@@ -227,7 +227,8 @@ export const getMe = async (userId: string) => {
   if (!user) {
     throw new AppError("User not found", 404);
   }
-  // const { password, ...withOutPassword } = user;
+  
+
 
   return user;
 };

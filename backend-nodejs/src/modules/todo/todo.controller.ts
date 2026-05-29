@@ -9,7 +9,7 @@ import {
   updateTodo,
   completeTodo,
   deleteTodo,
-  listAllTodo
+  listAllTodo,
 } from "./todo.service";
 import { AppError } from "../../shared/error/AppError";
 
@@ -18,17 +18,15 @@ export const listAllTodoHandler = async (
   res: Response,
   next: NextFunction,
 ) => {
-    try {
-        const userId = req.user!.userId;
+  try {
+    const userId = req.user!.userId;
 
-        const result = await listAllTodo(userId)
+    const result = await listAllTodo(userId);
 
-        return res.status(200).json(result)
-        
-    } catch (error) {
-        
-    }
-
+    return res.status(200).json(result);
+  } catch (error) {
+    return next(error)
+  }
 };
 
 export const createTodoHandler = async (

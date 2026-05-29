@@ -19,9 +19,14 @@ import toast from "react-hot-toast";
 // import { login, socialLogin } from "@/action/auth-action";
 import Image from "next/image";
 import { FaGithub } from "react-icons/fa";
+import { Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useLoginUser } from "@/hooks/useAuth";
+
 const page = () => {
   const [showPass, setShowPass] = useState<boolean>(false);
+  const { mutate, isPending, isError, error } = useLoginUser();
+
   const router = useRouter();
   const [form, setForm] = useState({
     email: "",
@@ -40,9 +45,17 @@ const page = () => {
     setShowPass(e.target.checked);
   };
 
-  const signInEmail = async (e: any) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
-    
+    mutate(form, {
+      onSuccess: () => {
+        setForm({
+          email: "",
+          password: "",
+        });
+      },
+    });
+
     // const { email, password } = form;
 
     // const res = await login(email, password);
@@ -100,13 +113,13 @@ const page = () => {
         </CardHeader>
 
         <CardContent className="px-10 py-10">
-          <form action="" onSubmit={signInEmail} className="space-y-8">
+          <form action="" onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-3">
               <Label
                 htmlFor="email"
                 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary ml-1"
               >
-                Identity_Email
+                Email
               </Label>
               <Input
                 name="email"
@@ -125,7 +138,7 @@ const page = () => {
                 htmlFor="password"
                 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary ml-1"
               >
-                Access_Key
+                Password
               </Label>
               <Input
                 name="password"
@@ -150,15 +163,20 @@ const page = () => {
                 htmlFor="toggle"
                 className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground cursor-pointer select-none opacity-60 hover:opacity-100 transition-opacity"
               >
-                Reveal Key
+                Reveal Password
               </Label>
             </div>
-
+            {isError && <p className="text-red-500">{error.message}</p>}
             <Button
+              disabled={isPending}
               type="submit"
               className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-mono font-black uppercase tracking-[0.3em] rounded-none shadow-[0_0_30px_rgba(var(--primary),0.15)] transition-all duration-300 active:scale-[0.98]"
             >
-              Initialize_Login
+              {isPending ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                "Initialize Login"
+              )}
             </Button>
           </form>
 
@@ -175,7 +193,6 @@ const page = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <Button
-              
               variant="outline"
               className="h-12 border-primary/20 hover:bg-primary/5 rounded-none transition-all duration-300 group"
             >
@@ -191,7 +208,6 @@ const page = () => {
               </span>
             </Button>
             <Button
-              
               variant="outline"
               className="h-12 border-primary/20 hover:bg-primary/5 rounded-none transition-all duration-300 group"
             >
@@ -205,13 +221,13 @@ const page = () => {
         <CardFooter className="flex flex-col gap-4 pb-12 pt-0 px-10">
           <div className="w-full h-px bg-primary/10 mb-6" />
           <p className="text-[10px] font-mono text-center text-muted-foreground uppercase tracking-widest">
-            New operator?{" "}
+            New operator ?
             <Link
               href={"/register"}
               className="font-bold text-primary hover:underline underline-offset-4"
             >
-              Register_ID
-            </Link>{" "}
+              Register
+            </Link>
           </p>
         </CardFooter>
       </Card>
