@@ -16,7 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import toast from "react-hot-toast";
-import { login, socialLogin } from "@/action/auth-action";
+// import { login, socialLogin } from "@/action/auth-action";
 import Image from "next/image";
 import { FaGithub } from "react-icons/fa";
 import { useRouter } from "next/navigation";
@@ -42,27 +42,28 @@ const page = () => {
 
   const signInEmail = async (e: any) => {
     e.preventDefault();
-    const { email, password } = form;
+    
+    // const { email, password } = form;
 
-    const res = await login(email, password);
-    localStorage.removeItem("tasks");
-    if (res.status == 200) {
-      setForm({
-        email: "",
-        password: "",
-      });
-      toast.success(res.message);
-      router.push("/");
-    } else if (res.status == 401) {
-      toast.error(res.message);
-    } else if (res.status == 500) {
-      toast.error(res.message);
-    }
+    // const res = await login(email, password);
+    // localStorage.removeItem("tasks");
+    // if (res.status == 200) {
+    //   setForm({
+    //     email: "",
+    //     password: "",
+    //   });
+    //   toast.success(res.message);
+    //   router.push("/");
+    // } else if (res.status == 401) {
+    //   toast.error(res.message);
+    // } else if (res.status == 500) {
+    //   toast.error(res.message);
+    // }
   };
 
-  const socialSignIn = async (provider: "github" | "google") => {
-    const res = await socialLogin(provider);
-  };
+  // const socialSignIn = async (provider: "github" | "google") => {
+  //   const res = await socialLogin(provider);
+  // };
 
   return (
     <main className="px-5 w-full min-h-screen flex flex-col items-center justify-center bg-background relative overflow-hidden">
@@ -174,7 +175,7 @@ const page = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <Button
-              onClick={() => socialSignIn("google")}
+              
               variant="outline"
               className="h-12 border-primary/20 hover:bg-primary/5 rounded-none transition-all duration-300 group"
             >
@@ -190,7 +191,7 @@ const page = () => {
               </span>
             </Button>
             <Button
-              onClick={() => socialLogin("github")}
+              
               variant="outline"
               className="h-12 border-primary/20 hover:bg-primary/5 rounded-none transition-all duration-300 group"
             >

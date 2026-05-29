@@ -1,99 +1,99 @@
-"use server";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { PrismaClient } from "@/generated/prisma";
+// "use server";
+// import { auth } from "@/lib/auth";
+// import { headers } from "next/headers";
+// import { redirect } from "next/navigation";
 
-export const register = async (
-  name: string,
-  email: string,
-  password: string,
-) => {
-  const prisma = new PrismaClient();
-  const existingUser = await prisma.user.findUnique({
-    where: { email: email },
-  });
 
-  if (existingUser) {
-    return {
-      status: 401,
-      message: "user already exists ",
-    };
-  }
+// export const register = async (
+//   name: string,
+//   email: string,
+//   password: string,
+// ) => {
+//   const prisma = new PrismaClient();
+//   const existingUser = await prisma.user.findUnique({
+//     where: { email: email },
+//   });
 
-  let response = await auth.api.signUpEmail({
-    body: {
-      name,
-      email,
-      password,
-      callbackURL: "/",
-    },
-  });
+//   if (existingUser) {
+//     return {
+//       status: 401,
+//       message: "user already exists ",
+//     };
+//   }
 
-  return {
-    status: 200,
-    message: "User Registerd successfully",
-    response,
-  };
-};
+//   let response = await auth.api.signUpEmail({
+//     body: {
+//       name,
+//       email,
+//       password,
+//       callbackURL: "/",
+//     },
+//   });
 
-export const login = async (email: string, password: string) => {
-  const prisma = new PrismaClient();
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email: email },
-    });
+//   return {
+//     status: 200,
+//     message: "User Registerd successfully",
+//     response,
+//   };
+// };
 
-    if (!user) {
-      return {
-        status: 401,
-        message: "User not found. Register First",
-      };
-    }
+// export const login = async (email: string, password: string) => {
+//   const prisma = new PrismaClient();
+//   try {
+//     const user = await prisma.user.findUnique({
+//       where: { email: email },
+//     });
 
-    const response = await auth.api.signInEmail({
-      body: {
-        email,
-        password,
-        callbackURL: "/",
-      },
-    });
+//     if (!user) {
+//       return {
+//         status: 401,
+//         message: "User not found. Register First",
+//       };
+//     }
 
-    return {
-      status: 200,
-      message: "You are logged in.....",
-      response,
-    };
-  } catch (error: any) {
-    if (error?.statusCode === 401 || error?.status === "UNAUTHORIZED") {
-      return {
-        status: 401,
-        message: "Invalid email or password.",
-      };
-    }
+//     const response = await auth.api.signInEmail({
+//       body: {
+//         email,
+//         password,
+//         callbackURL: "/",
+//       },
+//     });
 
-    // Fallback for unexpected errors
-    return {
-      status: 500,
-      message: error?.message || "Something went wrong during login.",
-    };
-  }
-};
+//     return {
+//       status: 200,
+//       message: "You are logged in.....",
+//       response,
+//     };
+//   } catch (error: any) {
+//     if (error?.statusCode === 401 || error?.status === "UNAUTHORIZED") {
+//       return {
+//         status: 401,
+//         message: "Invalid email or password.",
+//       };
+//     }
 
-export const signOut = async () => {
-  const response = await auth.api.signOut({ headers: await headers() });
-  return response;
-};
+//     // Fallback for unexpected errors
+//     return {
+//       status: 500,
+//       message: error?.message || "Something went wrong during login.",
+//     };
+//   }
+// };
 
-export const socialLogin = async (provider: "github" | "google") => {
-  const { url } = await auth.api.signInSocial({
-    body: {
-      provider,
-      callbackURL: "/",
-    },
-  });
+// export const signOut = async () => {
+//   const response = await auth.api.signOut({ headers: await headers() });
+//   return response;
+// };
 
-  if (url) {
-    redirect(url);
-  }
-};
+// export const socialLogin = async (provider: "github" | "google") => {
+//   const { url } = await auth.api.signInSocial({
+//     body: {
+//       provider,
+//       callbackURL: "/",
+//     },
+//   });
+
+//   if (url) {
+//     redirect(url);
+//   }
+// };

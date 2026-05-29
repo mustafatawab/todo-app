@@ -1,7 +1,7 @@
 import LogoutButton from "@/components/LogoutButton";
 import Task from "@/components/Task";
 import TaskList from "@/components/TaskList";
-import { auth } from "@/lib/auth";
+// import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import AddTask from "@/components/addTask";
@@ -16,10 +16,20 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function Home() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) {
-    redirect("/login");
+  // const session = await auth.api.getSession({ headers: await headers() });
+  // if (!session) {
+  //   redirect("/login");
+  // }
+
+  
+  const session = {
+    user : {
+      id : "001",
+      name: "John Smith",
+      email: "john@abc.com"
+    }
   }
+
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20">
