@@ -16,7 +16,7 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Cross, DeleteIcon, Plus } from "lucide-react";
+import { Cross, DeleteIcon, Loader2Icon, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { IoClose } from "react-icons/io5";
@@ -24,14 +24,15 @@ import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 import { TaskType } from "@/types/Task";
 import { getAllTasks } from "@/lib/getAllTasks";
+import { useUpdateTask } from "@/hooks/useTasks";
 
 const UpdateTask = ({
   data,
-  userId,
 }: {
   data: { id: String; title: String; description: String };
-  userId: String;
 }) => {
+  const { mutate: updateTask, isPending, isError } = useUpdateTask();
+
   const [taskForm, setTaskForm] = useState({
     title: data.title,
     description: data.description,
@@ -39,7 +40,6 @@ const UpdateTask = ({
   const [inputTag, setInputTag] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
 
-  const [loading, setLoading] = useState(false); // 🔹 track API request
   const [open, setOpen] = useState(false); // 🔹 control dialog state
 
   const onTagChange = (e: any) => {
@@ -61,44 +61,20 @@ const UpdateTask = ({
     });
   };
 
-  const submitTaskForm = async () => {
+  const submitTaskForm = () => {
     const { title, description } = taskForm;
-    const body = {
-      id: data.id,
-      title,
-      description,
-    };
-    try {
-      setLoading(true);
-      const res = await fetch("/api/task", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+
+    updateTask(
+      { id: data.id, title, description },
+      {
+        onSuccess: () => {
+          setOpen(false);
         },
-        body: JSON.stringify(body),
-      });
-      const result = await res.json();
-
-      let existingTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-
-      const updatedTasks = existingTasks.map((task: TaskType) => {
-        if (task.id === data.id) {
-          return { ...task, ...body };
-        }
-        return task;
-      });
-      existingTasks = updatedTasks;
-      localStorage.setItem("tasks", JSON.stringify(existingTasks));
-
-      setTaskForm({ title: "", description: "" });
-      getAllTasks(userId);
-      setOpen(false);
-    } catch (error) {
-      toast.error(error as string);
-    } finally {
-      setLoading(false);
-      window.location.reload();
-    }
+        onError: () => {
+          toast.error("Failed to update task. Please try again.");
+        },
+      },
+    );
   };
   return (
     <div className="flex justify-end">
@@ -166,13 +142,15 @@ const UpdateTask = ({
               Cancel
             </AlertDialogCancel>
             <Button
-              onClick={async () => {
-                await submitTaskForm();
-              }}
-              disabled={loading}
+              onClick={submitTaskForm}
+              disabled={isPending}
               className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-none h-11 px-10 text-[10px] font-mono font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/20 transition-all duration-300 active:scale-[0.98] disabled:opacity-50"
             >
-              {loading ? "Transmitting..." : "Update_Task"}
+              {isPending ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                "Update_Task"
+              )}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const getCsrfToken = async () => {
-  if (typeof document == undefined) return null;
+  if (typeof document === undefined) return null;
 
   const match = document.cookie.match(/(?:^|;\s*)csrfToken=([^;]*)/);
   return match ? decodeURIComponent(match[1]) : null;
@@ -30,11 +30,11 @@ export const api = axios.create({
   },
 });
 
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(async (config) => {
   const method = config.method?.toUpperCase();
 
   if (method && !["GET", "HEAD", "OPTIONS"].includes(method)) {
-    const csrfToken = getCsrfToken();
+    const csrfToken = await getCsrfToken();
 
     if (csrfToken) {
       config.headers["x-csrf-token"] = csrfToken;

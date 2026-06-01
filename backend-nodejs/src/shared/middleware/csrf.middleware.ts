@@ -15,14 +15,20 @@ export const setCsrfTokenCookie = (res: Response, csrfToken: string) => {
   });
 };
 
+export const clearCsrfTokenCookie = (res: Response) => {
+  res.clearCookie("csrfToken");
+};
+
 const CSRF_SAFE_PATH = [
   "/api/auth/register",
   "/api/auth/login",
   "/api/auth/refresh-token",
   "/api/auth/reset-password",
-  "/api/forgot-password",
-  // "/api/auth/logout",
+  "/api/auth/forgot-password",
+  "/api/auth/logout",
 ];
+
+const SAFE_METHODS = ["GET", "HEAD", "OPTIONS"];
 
 const isCsrfExempt = (path: string) => {
   return CSRF_SAFE_PATH.some(
@@ -38,15 +44,15 @@ export const csrfMiddleware = (
   const csrfTokenFromCookie = req.cookies["csrfToken"];
   const csrfTokenFromHeader = req.headers["x-csrf-token"] as string;
 
-  if (
-    req.method === "GET" ||
-    req.method === "HEAD" ||
-    req.method === "OPTIONS"
-  ) {
+  if (SAFE_METHODS.includes(req.method)) {
     return next();
   }
 
   const fullPaths = req.originalUrl.split("?")[0] as string;
+
+  if (fullPaths.startsWith("/api-docs")) {
+    return next();
+  }
 
   if (isCsrfExempt(fullPaths)) {
     return next();
@@ -63,8 +69,7 @@ export const csrfMiddleware = (
     !csrfTokenFromHeader ||
     csrfTokenFromCookie.length !== csrfTokenFromHeader.length // 👈 Check length first!
   ) {
-    
-    return res.status(403).json({ message: "Invalid CSRF Token" }); 
+    return res.status(403).json({ message: "Invalid CSRF Token" });
   }
 
   if (

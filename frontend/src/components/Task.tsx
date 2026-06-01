@@ -9,8 +9,8 @@ import { Button } from "./ui/button";
 import { DeleteDialog } from "./deleteDialog";
 import UpdateTask from "./updateTask";
 
-const Task = ({ data, userId }: { data: TaskType; userId: String }) => {
-  const { id, title, description, tags, createdAt } = data;
+const Task = ({ data }: { data: TaskType }) => {
+  const { id, title, description, createdAt } = data;
 
   const formattedDate = new Date(
     typeof createdAt === "string" || typeof createdAt === "number"
@@ -43,7 +43,7 @@ const Task = ({ data, userId }: { data: TaskType; userId: String }) => {
                 Task ID
               </span>
               <span className="text-[9px] font-mono text-muted-foreground uppercase">
-                #{id.toString().slice(-6)}
+                # T-{id.toString().slice(-3)}
               </span>
             </div>
             <h3 className="text-xl font-bold tracking-tight text-foreground/90 group-hover:text-primary transition-colors duration-300">
@@ -65,9 +65,9 @@ const Task = ({ data, userId }: { data: TaskType; userId: String }) => {
         </p>
 
         <div className="flex justify-end items-center gap-1 pt-4 border-t border-border/20">
-          <UpdateTask userId={userId} data={{ id, title, description }} />
+          <UpdateTask  data={{ id, title, description }} />
           <div className="w-px h-4 bg-border/40 mx-1" />
-          <DeleteDialog id={id} userId={userId}>
+          <DeleteDialog id={id}>
             <div className="p-2 text-muted-foreground/40 hover:text-destructive hover:bg-destructive/5 transition-all duration-200 cursor-pointer">
               <FaTrash className="w-3.5 h-3.5" />
             </div>

@@ -24,17 +24,27 @@ export default function Home() {
   // }
 
 
-  const { user , loading, isAuthenticated } = useAuth()
+  const { user, loading, isAuthenticated } = useAuth();
 
-  
-  // const session = {
-  //   user : {
-  //     id : "001",
-  //     name: "John Smith",
-  //     email: "john@abc.com"
-  //   }
-  // }
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+        <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+          Loading user...
+        </p>
+      </div>
+    );
+  }
 
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+        <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+          User not authenticated.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20">
@@ -112,7 +122,7 @@ export default function Home() {
               </span>
             </div>
           </div>
-          <TaskList userId={user!.id} />
+          <TaskList />
         </main>
       </div>
     </div>

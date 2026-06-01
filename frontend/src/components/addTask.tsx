@@ -23,8 +23,10 @@ import { IoClose } from "react-icons/io5";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 import { getAllTasks } from "@/lib/getAllTasks";
+import { useCreateTask } from "@/hooks/useTasks";
 
 const AddTask = ({ userId }: { userId: String }) => {
+  const { mutate: createTask, isPending } = useCreateTask();
   const [taskForm, setTaskForm] = useState({
     title: "",
     description: "",
@@ -33,7 +35,6 @@ const AddTask = ({ userId }: { userId: String }) => {
   const [inputTag, setInputTag] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
 
-  const [loading, setLoading] = useState(false); // 🔹 track API request
   const [open, setOpen] = useState(false); // 🔹 control dialog state
 
   const onTagChange = (e: any) => {
@@ -59,46 +60,34 @@ const AddTask = ({ userId }: { userId: String }) => {
     });
   };
 
-  const submitTaskForm = async () => {
+  const submitTaskForm = () => {
     const { title, description } = taskForm;
     const body = {
       title,
       description,
-      userId,
     };
-    try {
-      setLoading(true);
-      const res = await fetch("/api/task", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      const result = await res.json();
 
-      const existingTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-      localStorage.setItem(
-        "tasks",
-        JSON.stringify([result.task, ...existingTasks]),
-      );
+    createTask(body, {
+      onSuccess: async (task) => {
+        const existingTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+        localStorage.setItem("tasks", JSON.stringify([task, ...existingTasks]));
 
-      // notify other client components so they can update immediately
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("taskAdded", { detail: result.task }),
-        );
-      }
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("taskAdded", { detail: task }),
+          );
+        }
 
-      setOpen(false); // 🔹 close dialog only if success
-      setTaskForm({ title: "", description: "" }); // reset form
-      setTags([]);
-      await getAllTasks(userId);
-    } catch (error) {
-      toast.error(error as string);
-    } finally {
-      setLoading(false);
-    }
+        setOpen(false);
+        setTaskForm({ title: "", description: "" });
+        setTags([]);
+        await getAllTasks(userId);
+        toast.success("Task created successfully.");
+      },
+      onError: (error: any) => {
+        toast.error(error?.response?.data?.message || error?.message || "Failed to create task");
+      },
+    });
   };
   return (
     <div className="flex justify-end">
@@ -112,7 +101,7 @@ const AddTask = ({ userId }: { userId: String }) => {
             <div className="absolute -top-1 -left-1 w-1 h-1 bg-white/40" />
           </div>
           <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em]">
-            Initialize Task
+            Create Task
           </span>
         </Button>
         <AlertDialogContent className="max-w-md p-0 rounded-none border border-primary/30 bg-background/95 backdrop-blur-2xl shadow-2xl">
@@ -169,13 +158,11 @@ const AddTask = ({ userId }: { userId: String }) => {
               Abort
             </AlertDialogCancel>
             <Button
-              onClick={async () => {
-                await submitTaskForm();
-              }}
-              disabled={loading}
+              onClick={submitTaskForm}
+              disabled={isPending}
               className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-none h-11 px-10 text-[10px] font-mono font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/20 transition-all duration-300 active:scale-[0.98] disabled:opacity-50"
             >
-              {loading ? "Transmitting..." : "Execute_Task"}
+              {isPending ? "Transmitting..." : "Execute_Task"}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

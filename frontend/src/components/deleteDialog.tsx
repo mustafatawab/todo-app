@@ -12,39 +12,32 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { getAllTasks } from "@/lib/getAllTasks";
+import {useDeleteTask} from "@/hooks/useTasks";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 export function DeleteDialog({
   children,
   id,
-  userId,
 }: {
   children: React.ReactNode;
   id: String;
-  userId: String;
 }) {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  
+
+  const { mutate: deleteTask, isPending } = useDeleteTask();
 
   const handleDelete = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/task", {
-        method: "DELETE",
-        body: JSON.stringify({ id }),
-      });
-      const data = await res.json();
-      toast.success("Deleted Successfully !!!");
-      setOpen(false);
-      await getAllTasks(userId);
-    } catch (error) {
-      toast.error("Something went wrong");
-    } finally {
-      setLoading(false);
-      window.location.reload();
-    }
+    deleteTask(id as string, {
+      onSuccess: () => {
+        toast.success("Task deleted successfully.");
+        setOpen(false);
+      },
+      onError: () => {
+        toast.error("Failed to delete task. Please try again.");
+      },
+    });
   };
 
   const handleCancel = () => {
@@ -86,11 +79,11 @@ export function DeleteDialog({
             Abort_Purge
           </Button>
           <Button
-            disabled={loading}
+            disabled={isPending}
             onClick={handleDelete}
             className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-none h-11 px-10 text-[10px] font-mono font-bold uppercase tracking-[0.2em] shadow-lg shadow-destructive/20 transition-all duration-300 active:scale-[0.98] disabled:opacity-50"
           >
-            {loading ? "Purging..." : "Confirm_Delete"}
+            {isPending ? "Purging..." : "Confirm_Delete"}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

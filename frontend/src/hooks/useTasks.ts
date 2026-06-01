@@ -3,7 +3,7 @@ import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 
 const createTask = async (data: any) => {
-  const res = await api.post("/api/tasks", data);
+  const res = await api.post("/api/task", data);
   return res.data;
 };
 
@@ -19,8 +19,8 @@ const updateTask = async (data: any) => {
 };
 
 // complete task
-const completeTask = async (id: string) => {
-  const res = await api.patch(`/api/task/${id}/complete`);
+const completeTask = async (id: string, data: any) => {
+  const res = await api.patch(`/api/task/${id}/complete`, data);
   return res.data;
 };
 
