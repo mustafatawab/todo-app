@@ -22,7 +22,6 @@ import { Badge } from "@/components/ui/badge";
 import { IoClose } from "react-icons/io5";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
-import { getAllTasks } from "@/lib/getAllTasks";
 import { useCreateTask } from "@/hooks/useTasks";
 
 const AddTask = ({ userId }: { userId: String }) => {
@@ -61,16 +60,10 @@ const AddTask = ({ userId }: { userId: String }) => {
   };
 
   const submitTaskForm = () => {
-    const { title, description } = taskForm;
-    const body = {
-      title,
-      description,
-    };
+    
 
-    createTask(body, {
+    createTask(taskForm, {
       onSuccess: async (task) => {
-        const existingTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-        localStorage.setItem("tasks", JSON.stringify([task, ...existingTasks]));
 
         if (typeof window !== "undefined") {
           window.dispatchEvent(
@@ -81,7 +74,7 @@ const AddTask = ({ userId }: { userId: String }) => {
         setOpen(false);
         setTaskForm({ title: "", description: "" });
         setTags([]);
-        await getAllTasks(userId);
+        
         toast.success("Task created successfully.");
       },
       onError: (error: any) => {

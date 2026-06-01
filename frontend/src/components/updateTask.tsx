@@ -17,13 +17,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Cross, DeleteIcon, Loader2Icon, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { IoClose } from "react-icons/io5";
+import { useEffect, useState } from "react";;
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
-import { TaskType } from "@/types/Task";
-import { getAllTasks } from "@/lib/getAllTasks";
 import { useUpdateTask } from "@/hooks/useTasks";
 
 const UpdateTask = ({
