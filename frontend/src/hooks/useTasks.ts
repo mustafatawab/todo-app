@@ -19,8 +19,8 @@ const updateTask = async (data: any) => {
 };
 
 // complete task
-const completeTask = async (id: string, data: any) => {
-  const res = await api.patch(`/api/task/${id}/complete`, data);
+const completeTask = async (data: any) => {
+  const res = await api.patch(`/api/task/${data.id}/complete`, data);
   return res.data;
 };
 
