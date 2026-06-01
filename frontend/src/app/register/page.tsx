@@ -57,6 +57,9 @@ const page = () => {
           email: "",
           password: "",
         });
+
+        router.push("/login")
+        toast.success("User registered Successfully")
       },
     });
 

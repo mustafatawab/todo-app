@@ -7,7 +7,7 @@ export const generateCsrfToken = () => {
 };
 
 export const setCsrfTokenCookie = (res: Response, csrfToken: string) => {
-  console.log("CSRF Token is " , csrfToken)
+  console.log("CSRF Token is ", csrfToken);
   res.cookie("csrfToken", csrfToken, {
     httpOnly: false,
     maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -21,6 +21,7 @@ const CSRF_SAFE_PATH = [
   "/api/auth/refresh-token",
   "/api/auth/reset-password",
   "/api/forgot-password",
+  // "/api/auth/logout",
 ];
 
 const isCsrfExempt = (path: string) => {
@@ -55,6 +56,15 @@ export const csrfMiddleware = (
     return res.status(403).json({
       message: "CSRF Tokens are missing",
     });
+  }
+
+  if (
+    !csrfTokenFromCookie ||
+    !csrfTokenFromHeader ||
+    csrfTokenFromCookie.length !== csrfTokenFromHeader.length // 👈 Check length first!
+  ) {
+    
+    return res.status(403).json({ message: "Invalid CSRF Token" }); 
   }
 
   if (

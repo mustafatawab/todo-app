@@ -1,3 +1,4 @@
+'use client'
 import LogoutButton from "@/components/LogoutButton";
 import Task from "@/components/Task";
 import TaskList from "@/components/TaskList";
@@ -14,21 +15,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/context/authContext";
 
-export default async function Home() {
+export default function Home() {
   // const session = await auth.api.getSession({ headers: await headers() });
   // if (!session) {
   //   redirect("/login");
   // }
 
+
+  const { user , loading, isAuthenticated } = useAuth()
+
   
-  const session = {
-    user : {
-      id : "001",
-      name: "John Smith",
-      email: "john@abc.com"
-    }
-  }
+  // const session = {
+  //   user : {
+  //     id : "001",
+  //     name: "John Smith",
+  //     email: "john@abc.com"
+  //   }
+  // }
 
 
   return (
@@ -51,14 +56,14 @@ export default async function Home() {
           </div>
 
           <div className="flex items-center gap-6">
-            <AddTask userId={session.user.id} />
+            <AddTask userId={user!.id} />
             <div className="flex items-center gap-3 pl-6 border-l border-border/40">
               <div className="text-right hidden sm:block">
                 <p className="text-[10px] font-mono font-bold uppercase tracking-tight leading-none mb-1">
                   Operator
                 </p>
                 <p className="text-xs font-medium opacity-80">
-                  {session.user.name}
+                  {user!.name}
                 </p>
               </div>
               <DropdownMenu>
@@ -66,7 +71,7 @@ export default async function Home() {
                   <div className="relative">
                     <Avatar className="h-10 w-10 rounded-none border border-primary/30 group-hover:border-primary transition-all duration-300">
                       <AvatarFallback className="bg-secondary text-primary font-mono text-xs rounded-none">
-                        {session.user.name[0]}
+                        {user!.name[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-background border border-primary/30 flex items-center justify-center">
@@ -83,10 +88,10 @@ export default async function Home() {
                       Security ID
                     </p>
                     <p className="text-sm font-bold truncate tracking-tight">
-                      {session.user.name}
+                      {user!.name}
                     </p>
                     <p className="text-[10px] font-mono text-muted-foreground truncate mt-1">
-                      {session.user.email}
+                      {user!.email}
                     </p>
                   </div>
                   <div className="p-2">
@@ -107,7 +112,7 @@ export default async function Home() {
               </span>
             </div>
           </div>
-          <TaskList userId={session.user.id} />
+          <TaskList userId={user!.id} />
         </main>
       </div>
     </div>

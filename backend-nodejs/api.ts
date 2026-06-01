@@ -8,6 +8,7 @@ import { swaggerSpec } from "./src/shared/config/swagger";
 import cors from "cors";
 import { authMiddleware } from "./src/shared/middleware/auth.middleware";
 import { csrfMiddleware } from "./src/shared/middleware/csrf.middleware";
+import { AppError } from "./src/shared/error/AppError";
 
 export const app = express();
 
@@ -35,6 +36,23 @@ app.use("/api/task", todoRouter);
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
+
+
+  if (err instanceof AppError){
+    return res.status(statusCode).json({
+      message: err.message
+    })
+  }
+
+  if (err.name == "ZodError" || err.issues){
+    console.log("Zod Validation error " , JSON.stringify(err.issues || err.errors, null , 2))
+    return res.status(statusCode).json({
+      message : "Validation Failed",
+      errors : err.errors || err.issues
+    })
+  }
+
+  console.error(err)
 
   res.status(statusCode).json({
     error: message,
