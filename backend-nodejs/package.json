@@ -1,11 +1,11 @@
 {
-  "name": "backend-nodejs",
+  "name": "task-management-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "api.ts",
   "scripts": {
     "dev": "tsx watch server.ts",
-    "build": "tsx server.ts"
+    "build": "prisma generate"
   },
   "keywords": [],
   "author": "",
