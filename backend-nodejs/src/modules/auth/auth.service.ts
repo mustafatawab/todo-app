@@ -96,12 +96,12 @@ export const refreshAccessToken = async (
   }
 
   const checkTokenInDb = await prisma.session.findUnique({
-    where: { token },
+    where: { token , userId: payload.userId },
   });
 
   if (!checkTokenInDb) {
     await prisma.session.delete({
-      where: { token },
+      where: { token , userId: payload.userId },
     });
     throw new AppError("Refresh token does not found in the database", 401);
   }
@@ -112,7 +112,7 @@ export const refreshAccessToken = async (
   });
 
   await prisma.session.update({
-    where: { token },
+    where: { token , userId: payload.userId },
     data: {
       token: refreshToken,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
