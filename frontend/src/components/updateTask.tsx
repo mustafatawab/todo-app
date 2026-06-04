@@ -1,67 +1,61 @@
 "use client";
-import React, { use } from "react";
+import React from "react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { FaEdit, FaPlus } from "react-icons/fa";
-import Image from "next/image";
+import { FaEdit } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Cross, DeleteIcon, Loader2Icon, Plus } from "lucide-react";
-import { useEffect, useState } from "react";;
+import { Loader2Icon } from "lucide-react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 import { useUpdateTask } from "@/hooks/useTasks";
+import { DatePicker } from "./DatePicker";
+import type { Priority, TaskType } from "@/types/Task";
 
-const UpdateTask = ({
-  data,
-}: {
-  data: { id: String; title: String; description: String };
-}) => {
-  const { mutate: updateTask, isPending, isError } = useUpdateTask();
+const PRIORITIES: { value: Priority; label: string }[] = [
+  { value: "LOW", label: "Priority_Low" },
+  { value: "MEDIUM", label: "Priority_Medium" },
+  { value: "HIGH", label: "Priority_High" },
+  { value: "URGENT", label: "Priority_Urgent" },
+];
+
+const UpdateTask = ({ data }: { data: TaskType }) => {
+  const { mutate: updateTask, isPending } = useUpdateTask();
 
   const [taskForm, setTaskForm] = useState({
     title: data.title,
     description: data.description,
+    priority: data.priority,
+    dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
   });
-  const [inputTag, setInputTag] = useState<string>("");
-  const [tags, setTags] = useState<string[]>([]);
 
-  const [open, setOpen] = useState(false); // 🔹 control dialog state
-
-  const onTagChange = (e: any) => {
-    setInputTag(e.target.value);
-  };
-
-  const handleInputKeyDown = (event: any) => {
-    if (event.key === "Enter" && inputTag.trim() !== "") {
-      setTags([...tags, inputTag.trim()]);
-      setInputTag("");
-    }
-  };
+  const [open, setOpen] = useState(false);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    setTaskForm({
-      ...taskForm,
-      [name]: value,
-    });
+    setTaskForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const submitTaskForm = () => {
-    const { title, description } = taskForm;
+    const { title, description, priority, dueDate } = taskForm;
 
     updateTask(
-      { id: data.id, title, description },
+      {
+        id: data.id,
+        title,
+        description,
+        priority,
+        dueDate: dueDate ? dueDate.toISOString() : null,
+      },
       {
         onSuccess: () => {
           setOpen(false);
@@ -72,6 +66,7 @@ const UpdateTask = ({
       },
     );
   };
+
   return (
     <div className="flex justify-end">
       <AlertDialog open={open} onOpenChange={setOpen}>
@@ -88,7 +83,7 @@ const UpdateTask = ({
               <AlertDialogTitle className="text-sm font-mono font-black uppercase tracking-[0.3em] text-foreground">
                 Task <span className="text-primary">Modification</span>
               </AlertDialogTitle>
-              <AlertDialogDescription className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mt-1 opacity-60">
+              <AlertDialogDescription className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest mt-1">
                 Protocol: Update Existing Entry
               </AlertDialogDescription>
             </div>
@@ -102,10 +97,10 @@ const UpdateTask = ({
           <div className="p-8 space-y-8">
             <div className="space-y-3">
               <div className="flex justify-between items-end">
-                <Label className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-primary">
+                <Label className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-primary">
                   01_Subject_Override
                 </Label>
-                <span className="text-[9px] font-mono text-muted-foreground opacity-40 italic">
+                <span className="text-[10px] font-mono text-muted-foreground italic">
                   ID_Verified
                 </span>
               </div>
@@ -119,9 +114,42 @@ const UpdateTask = ({
                 required
               />
             </div>
+
             <div className="space-y-3">
-              <Label className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-primary">
-                02_Protocol_Details
+              <Label className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-primary">
+                02_Priority_Level
+              </Label>
+              <div className="grid grid-cols-4 gap-2">
+                {PRIORITIES.map((p) => (
+                  <button
+                    key={p.value}
+                    type="button"
+                    onClick={() => setTaskForm((prev) => ({ ...prev, priority: p.value }))}
+                    className={`h-10 font-mono text-[10px] font-bold uppercase tracking-wider border transition-all duration-200 ${
+                      taskForm.priority === p.value
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border/60 bg-secondary/20 text-muted-foreground hover:border-primary/40"
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-primary">
+                03_Deadline_Override
+              </Label>
+              <DatePicker
+                date={taskForm.dueDate}
+                onSelect={(date) => setTaskForm((prev) => ({ ...prev, dueDate: date }))}
+              />
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-primary">
+                04_Protocol_Details
               </Label>
               <Textarea
                 name="description"
@@ -139,14 +167,13 @@ const UpdateTask = ({
             </AlertDialogCancel>
             <Button
               onClick={submitTaskForm}
-              disabled={isPending}
+              disabled={isPending || !taskForm.title.toString().trim()}
               className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-none h-11 px-10 text-[10px] font-mono font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/20 transition-all duration-300 active:scale-[0.98] disabled:opacity-50"
             >
               {isPending ? (
-                <Loader2Icon className="animate-spin" />
-              ) : (
-                "Update_Task"
-              )}
+                <Loader2Icon className="animate-spin mr-2" />
+              ) : null}
+              Update_Task
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

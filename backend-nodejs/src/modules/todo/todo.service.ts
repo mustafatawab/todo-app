@@ -8,7 +8,7 @@ import { AppError } from "../../shared/error/AppError";
 
 // Create Todo service
 export const createTodo = async (input: TodoCreateInput, userId: string) => {
-  const { title, description } = input;
+  const { title, description, priority, dueDate } = input;
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
 
@@ -18,9 +18,11 @@ export const createTodo = async (input: TodoCreateInput, userId: string) => {
 
   const task = await prisma.task.create({
     data: {
-      userId: userId,
+      user: { connect: { id: userId } },
       title,
       description: description || null,
+      priority: priority || "MEDIUM",
+      dueDate: dueDate ? new Date(dueDate) : null,
     },
   });
 
@@ -54,18 +56,20 @@ export const updateTodo = async (
     throw new AppError("User not found while createing the todo  ", 404);
   }
 
-  const task = await prisma.task.findUnique({ where: { id: taskId, userId } });
+  const existing = await prisma.task.findUnique({ where: { id: taskId, userId } });
 
-  if (!task) {
+  if (!existing) {
     throw new AppError(`Task not found for the ${user.name} `, 404);
   }
 
   const updatedTask = await prisma.task.update({
     where: { id: taskId, userId },
     data: {
-      title: input.title || task.title,
-      description: input.description || task.description,
-      completed: task.completed,
+      title: input.title ?? existing.title,
+      description: input.description !== undefined ? input.description : existing.description,
+      priority: (input.priority as any) ?? (existing as any).priority,
+      dueDate: input.dueDate !== undefined ? (input.dueDate ? new Date(input.dueDate) : null) : (existing as any).dueDate,
+      completed: existing.completed,
     },
   });
 

@@ -1,8 +1,7 @@
 "use client";
-import React, { use } from "react";
+import React from "react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -12,76 +11,60 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { FaPlus } from "react-icons/fa";
-import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Cross, DeleteIcon, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { IoClose } from "react-icons/io5";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 import { useCreateTask } from "@/hooks/useTasks";
+import { DatePicker } from "./DatePicker";
+import type { Priority } from "@/types/Task";
+
+const PRIORITIES: { value: Priority; label: string }[] = [
+  { value: "LOW", label: "Low" },
+  { value: "MEDIUM", label: "Medium" },
+  { value: "HIGH", label: "High" },
+  { value: "URGENT", label: "Urgent" },
+];
 
 const AddTask = ({ userId }: { userId: String }) => {
   const { mutate: createTask, isPending } = useCreateTask();
   const [taskForm, setTaskForm] = useState({
     title: "",
     description: "",
+    priority: "MEDIUM" as Priority,
+    dueDate: undefined as Date | undefined,
   });
 
-  const [inputTag, setInputTag] = useState<string>("");
-  const [tags, setTags] = useState<string[]>([]);
-
-  const [open, setOpen] = useState(false); // 🔹 control dialog state
-
-  const onTagChange = (e: any) => {
-    setInputTag(e.target.value);
-  };
-
-  const handleInputKeyDown = (event: any) => {
-    if (event.key === "Enter" && inputTag.trim() !== "") {
-      setTags([...tags, inputTag.trim()]);
-      setInputTag("");
-    }
-  };
-
-  const removeTag = (index: Number) => {
-    setTags(tags.filter((_, i) => i != index));
-  };
+  const [open, setOpen] = useState(false);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    setTaskForm({
-      ...taskForm,
-      [name]: value,
-    });
+    setTaskForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const submitTaskForm = () => {
-    
-
-    createTask(taskForm, {
-      onSuccess: async (task) => {
-
-        if (typeof window !== "undefined") {
-          window.dispatchEvent(
-            new CustomEvent("taskAdded", { detail: task }),
-          );
-        }
-
-        setOpen(false);
-        setTaskForm({ title: "", description: "" });
-        setTags([]);
-        
-        toast.success("Task created successfully.");
+    createTask(
+      {
+        title: taskForm.title,
+        description: taskForm.description,
+        priority: taskForm.priority,
+        dueDate: taskForm.dueDate ? taskForm.dueDate.toISOString() : null,
       },
-      onError: (error: any) => {
-        toast.error(error?.response?.data?.message || error?.message || "Failed to create task");
+      {
+        onSuccess: () => {
+          setOpen(false);
+          setTaskForm({ title: "", description: "", priority: "MEDIUM", dueDate: undefined });
+          toast.success("Task created successfully.");
+        },
+        onError: (error: any) => {
+          toast.error(error?.response?.data?.message || error?.message || "Failed to create task");
+        },
       },
-    });
+    );
   };
+
   return (
     <div className="flex justify-end">
       <AlertDialog open={open} onOpenChange={setOpen}>
@@ -103,7 +86,7 @@ const AddTask = ({ userId }: { userId: String }) => {
               <AlertDialogTitle className="text-sm font-mono font-black uppercase tracking-[0.3em] text-foreground">
                 Task <span className="text-primary">Initialization</span>
               </AlertDialogTitle>
-              <AlertDialogDescription className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mt-1 opacity-60">
+              <AlertDialogDescription className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest mt-1">
                 Protocol: Capture New Entry
               </AlertDialogDescription>
             </div>
@@ -117,30 +100,65 @@ const AddTask = ({ userId }: { userId: String }) => {
           <div className="p-8 space-y-8">
             <div className="space-y-3">
               <div className="flex justify-between items-end">
-                <Label className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-primary">
-                  01_Subject
+                <Label className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-primary">
+                  Name of Task
                 </Label>
-                <span className="text-[9px] font-mono text-muted-foreground opacity-40 italic">
-                  Required_Field
+                <span className="text-[10px] font-mono text-muted-foreground italic">
+                  *
                 </span>
               </div>
               <Input
                 className="w-full bg-secondary/20 border-border/60 focus:border-primary focus:bg-white transition-all duration-200 rounded-none px-4 h-12 font-mono text-sm"
                 type="text"
-                placeholder="INPUT_SUBJECT_HERE"
+                placeholder="Enter task title..."
                 name="title"
+                value={taskForm.title}
                 onChange={handleChange}
                 required
               />
             </div>
+
             <div className="space-y-3">
-              <Label className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-primary">
-                02_Protocol_Details
+              <Label className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-primary">
+                Priority Level
+              </Label>
+              <div className="grid grid-cols-4 gap-2">
+                {PRIORITIES.map((p) => (
+                  <button
+                    key={p.value}
+                    type="button"
+                    onClick={() => setTaskForm((prev) => ({ ...prev, priority: p.value }))}
+                    className={`h-10 font-mono text-[10px] font-bold capitalize tracking-wider border transition-all duration-200 ${
+                      taskForm.priority === p.value
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border/60 bg-secondary/20 text-muted-foreground hover:border-primary/40"
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-primary">
+                Deadline
+              </Label>
+              <DatePicker
+                date={taskForm.dueDate}
+                onSelect={(date) => setTaskForm((prev) => ({ ...prev, dueDate: date }))}
+              />
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-primary">
+                Task Details
               </Label>
               <Textarea
                 name="description"
+                value={taskForm.description}
                 onChange={handleChange}
-                placeholder="DESCRIBE_TASK_PARAMETERS..."
+                placeholder="Describe the task in detail..."
                 className="bg-secondary/20 border-border/60 focus:border-primary focus:bg-white transition-all duration-200 rounded-none px-4 py-4 min-h-[140px] resize-none font-mono text-xs leading-relaxed"
               />
             </div>
@@ -152,10 +170,10 @@ const AddTask = ({ userId }: { userId: String }) => {
             </AlertDialogCancel>
             <Button
               onClick={submitTaskForm}
-              disabled={isPending}
+              disabled={isPending || !taskForm.title.trim()}
               className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-none h-11 px-10 text-[10px] font-mono font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/20 transition-all duration-300 active:scale-[0.98] disabled:opacity-50"
             >
-              {isPending ? "Transmitting..." : "Execute_Task"}
+              {isPending ? "Transmitting..." : "Execute Task"}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

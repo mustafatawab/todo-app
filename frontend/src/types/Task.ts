@@ -1,7 +1,11 @@
+export type Priority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+
 export type TaskType = {
-  id: String;
-  title: String;
-  completed: Boolean;
-  description: String;
-  createdAt?: String;
+  id: string;
+  title: string;
+  completed: boolean;
+  description: string;
+  priority: Priority;
+  dueDate?: string | null;
+  createdAt?: string;
 };
