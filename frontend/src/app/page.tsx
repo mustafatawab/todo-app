@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/authContext";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
 
 export default function Home() {
   // const session = await auth.api.getSession({ headers: await headers() });
@@ -37,14 +40,20 @@ export default function Home() {
   }
 
   if (!user) {
+    // useRouter().push("/login");
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
         <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
           User not authenticated.
         </p>
+        <Link href="/login" className="ml-4 px-4 py-2 bg-primary text-background text-xs font-mono uppercase tracking-wider">
+          Go to Login
+        </Link>
       </div>
     );
   }
+
+  console.log("is Auth", isAuthenticated);
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20">
