@@ -1,136 +1,85 @@
 'use client'
 import LogoutButton from "@/components/LogoutButton";
-import Task from "@/components/Task";
 import TaskList from "@/components/TaskList";
-// import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import AddTask from "@/components/addTask";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/context/authContext";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-
+import { Loader2Icon } from "lucide-react";
 
 export default function Home() {
-  // const session = await auth.api.getSession({ headers: await headers() });
-  // if (!session) {
-  //   redirect("/login");
-  // }
-
-
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
-        <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
-          Loading user...
-        </p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2Icon className="h-5 w-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   if (!user) {
-    // useRouter().push("/login");
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
-        <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
-          User not authenticated.
-        </p>
-        <Link href="/login" className="ml-4 px-4 py-2 bg-primary text-background text-xs font-mono uppercase tracking-wider">
-          Go to Login
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
+        <p className="text-sm text-muted-foreground">You are not signed in.</p>
+        <Link
+          href="/login"
+          className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-primary/90"
+        >
+          Sign in
         </Link>
       </div>
     );
   }
 
-  console.log("is Auth", isAuthenticated);
-
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/20">
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <header className="relative flex justify-between items-end mb-16 pb-6 border-b border-primary/20 animate-in fade-in slide-in-from-top-2 duration-500">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="w-2 h-2 bg-primary animate-pulse" />
-              <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-primary uppercase">
-                System Online
-              </span>
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto max-w-3xl px-6 py-10">
+        <header className="mb-12 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-sm">T</span>
             </div>
-            <h1 className="text-4xl font-black tracking-tighter uppercase italic leading-none">
-              Command <span className="text-primary/80">Center</span>
-            </h1>
-            <p className="text-muted-foreground text-xs font-mono uppercase tracking-widest opacity-60">
-              Orbital Task Management Protocol v1.0
-            </p>
+            <div>
+              <h1 className="text-lg font-semibold tracking-tight">Tasks</h1>
+              <p className="text-xs text-muted-foreground">
+                {user.name} &middot; {user.email}
+              </p>
+            </div>
           </div>
-
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
             <AddTask userId={user!.id} />
-            <div className="flex items-center gap-3 pl-6 border-l border-border/40">
-              <div className="text-right hidden sm:block">
-                <p className="text-[10px] font-mono font-bold uppercase tracking-tight leading-none mb-1">
-                  Operator
-                </p>
-                <p className="text-xs font-medium opacity-80">
-                  {user!.name}
-                </p>
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="focus:outline-none group">
-                  <div className="relative">
-                    <Avatar className="h-10 w-10 rounded-none border border-primary/30 group-hover:border-primary transition-all duration-300">
-                      <AvatarFallback className="bg-secondary text-primary font-mono text-xs rounded-none">
-                        {user!.name[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-background border border-primary/30 flex items-center justify-center">
-                      <div className="w-1 h-1 bg-primary" />
-                    </div>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-64 p-0 rounded-none border border-primary/20 bg-background/95 backdrop-blur-xl shadow-2xl shadow-primary/5"
-                >
-                  <div className="p-4 border-b border-border/40 bg-secondary/20">
-                    <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary/60 mb-2">
-                      Security ID
-                    </p>
-                    <p className="text-sm font-bold truncate tracking-tight">
-                      {user!.name}
-                    </p>
-                    <p className="text-[10px] font-mono text-muted-foreground truncate mt-1">
-                      {user!.email}
-                    </p>
-                  </div>
-                  <div className="p-2">
-                    <LogoutButton />
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="focus:outline-none">
+                <Avatar className="h-9 w-9 rounded-lg border border-transparent transition-all hover:border-primary/30">
+                  <AvatarFallback className="bg-secondary text-foreground text-xs font-medium rounded-lg">
+                    {user!.name[0]}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-56 rounded-xl border bg-card p-2 shadow-lg"
+              >
+                <div className="px-3 py-2">
+                  <p className="text-sm font-medium truncate">{user!.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user!.email}</p>
+                </div>
+                <div className="mt-1 border-t" />
+                <div className="pt-1">
+                  <LogoutButton />
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
-        <main className="animate-in fade-in slide-in-from-bottom-2 duration-700 delay-150">
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="h-px w-8 bg-primary/40" />
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] opacity-50">
-                Active Protocols
-              </span>
-            </div>
-          </div>
+        <main>
           <TaskList />
         </main>
       </div>

@@ -56,7 +56,6 @@ const AddTask = ({ userId }: { userId: String }) => {
         onSuccess: () => {
           setOpen(false);
           setTaskForm({ title: "", description: "", priority: "MEDIUM", dueDate: undefined });
-          toast.success("Task created successfully.");
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || error?.message || "Failed to create task");
@@ -66,119 +65,89 @@ const AddTask = ({ userId }: { userId: String }) => {
   };
 
   return (
-    <div className="flex justify-end">
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <Button
-          onClick={() => setOpen(true)}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-none h-10 px-6 flex items-center gap-3 transition-all duration-200 active:scale-[0.98] border border-primary/20 hover:border-primary shadow-[0_0_20px_rgba(var(--primary),0.1)]"
-        >
-          <div className="relative">
-            <FaPlus className="w-3 h-3" />
-            <div className="absolute -top-1 -left-1 w-1 h-1 bg-white/40" />
-          </div>
-          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em]">
-            Create Task
-          </span>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <Button className="h-9 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground px-4 text-xs font-medium shadow-sm transition-all duration-200 active:scale-[0.98]">
+          <FaPlus className="mr-1.5 h-3 w-3" />
+          New Task
         </Button>
-        <AlertDialogContent className="max-w-md p-0 rounded-none border border-primary/30 bg-background/95 backdrop-blur-2xl shadow-2xl">
-          <div className="bg-secondary/30 px-6 py-5 border-b border-primary/20 flex justify-between items-center">
-            <div>
-              <AlertDialogTitle className="text-sm font-mono font-black uppercase tracking-[0.3em] text-foreground">
-                Task <span className="text-primary">Initialization</span>
-              </AlertDialogTitle>
-              <AlertDialogDescription className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest mt-1">
-                Protocol: Capture New Entry
-              </AlertDialogDescription>
-            </div>
-            <div className="flex gap-1">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="w-1.5 h-1.5 border border-primary/30" />
+      </AlertDialogTrigger>
+      <AlertDialogContent className="sm:max-w-md rounded-xl border bg-card p-0 shadow-xl">
+        <div className="px-6 pt-6 pb-4 border-b">
+          <AlertDialogTitle className="text-base font-semibold">New Task</AlertDialogTitle>
+          <AlertDialogDescription className="text-sm text-muted-foreground mt-1">
+            Create a new task to track.
+          </AlertDialogDescription>
+        </div>
+
+        <div className="px-6 py-5 space-y-5">
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-foreground/80">Title</Label>
+            <Input
+              className="h-10 rounded-lg border-input bg-background px-3 text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+              type="text"
+              placeholder="What needs to be done?"
+              name="title"
+              value={taskForm.title}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-foreground/80">Priority</Label>
+            <div className="flex gap-2">
+              {PRIORITIES.map((p) => (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() => setTaskForm((prev) => ({ ...prev, priority: p.value }))}
+                  className={`flex-1 h-9 rounded-lg text-xs font-medium transition-all duration-200 ${
+                    taskForm.priority === p.value
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  }`}
+                >
+                  {p.label}
+                </button>
               ))}
             </div>
           </div>
 
-          <div className="p-8 space-y-8">
-            <div className="space-y-3">
-              <div className="flex justify-between items-end">
-                <Label className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-primary">
-                  Name of Task
-                </Label>
-                <span className="text-[10px] font-mono text-muted-foreground italic">
-                  *
-                </span>
-              </div>
-              <Input
-                className="w-full bg-secondary/20 border-border/60 focus:border-primary focus:bg-white transition-all duration-200 rounded-none px-4 h-12 font-mono text-sm"
-                type="text"
-                placeholder="Enter task title..."
-                name="title"
-                value={taskForm.title}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="space-y-3">
-              <Label className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-primary">
-                Priority Level
-              </Label>
-              <div className="grid grid-cols-4 gap-2">
-                {PRIORITIES.map((p) => (
-                  <button
-                    key={p.value}
-                    type="button"
-                    onClick={() => setTaskForm((prev) => ({ ...prev, priority: p.value }))}
-                    className={`h-10 font-mono text-[10px] font-bold capitalize tracking-wider border transition-all duration-200 ${
-                      taskForm.priority === p.value
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border/60 bg-secondary/20 text-muted-foreground hover:border-primary/40"
-                    }`}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <Label className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-primary">
-                Deadline
-              </Label>
-              <DatePicker
-                date={taskForm.dueDate}
-                onSelect={(date) => setTaskForm((prev) => ({ ...prev, dueDate: date }))}
-              />
-            </div>
-
-            <div className="space-y-3">
-              <Label className="text-[11px] font-mono font-black uppercase tracking-[0.2em] text-primary">
-                Task Details
-              </Label>
-              <Textarea
-                name="description"
-                value={taskForm.description}
-                onChange={handleChange}
-                placeholder="Describe the task in detail..."
-                className="bg-secondary/20 border-border/60 focus:border-primary focus:bg-white transition-all duration-200 rounded-none px-4 py-4 min-h-[140px] resize-none font-mono text-xs leading-relaxed"
-              />
-            </div>
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-foreground/80">Due date</Label>
+            <DatePicker
+              date={taskForm.dueDate}
+              onSelect={(date) => setTaskForm((prev) => ({ ...prev, dueDate: date }))}
+            />
           </div>
 
-          <AlertDialogFooter className="bg-secondary/10 px-8 py-6 border-t border-border/40 flex items-center gap-4">
-            <AlertDialogCancel className="bg-transparent hover:bg-destructive/5 hover:text-destructive border border-border/60 hover:border-destructive/40 rounded-none h-11 px-8 text-[10px] font-mono font-bold uppercase tracking-[0.2em] transition-all duration-200">
-              Abort
-            </AlertDialogCancel>
-            <Button
-              onClick={submitTaskForm}
-              disabled={isPending || !taskForm.title.trim()}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-none h-11 px-10 text-[10px] font-mono font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/20 transition-all duration-300 active:scale-[0.98] disabled:opacity-50"
-            >
-              {isPending ? "Transmitting..." : "Execute Task"}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-foreground/80">Description</Label>
+            <Textarea
+              name="description"
+              value={taskForm.description}
+              onChange={handleChange}
+              placeholder="Add details..."
+              className="min-h-[100px] rounded-lg border-input bg-background px-3 py-2.5 text-sm resize-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+        </div>
+
+        <div className="px-6 py-4 border-t flex justify-end gap-3">
+          <AlertDialogCancel className="h-9 rounded-lg border border-input bg-background px-4 text-xs font-medium hover:bg-secondary transition-all">
+            Cancel
+          </AlertDialogCancel>
+          <Button
+            onClick={submitTaskForm}
+            disabled={isPending || !taskForm.title.trim()}
+            className="h-9 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground px-5 text-xs font-medium shadow-sm transition-all disabled:opacity-50"
+          >
+            {isPending ? "Creating..." : "Create"}
+          </Button>
+        </div>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

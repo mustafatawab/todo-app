@@ -23,23 +23,20 @@ export function DatePicker({ date, onSelect }: DatePickerProps) {
         <Button
           variant="outline"
           className={cn(
-            "w-full h-11 bg-secondary/20 border-border/60 hover:border-primary/40 rounded-none px-3 font-mono text-xs justify-start text-left font-normal transition-all duration-200",
+            "w-full h-10 rounded-lg border-input bg-background px-3 text-sm justify-start text-left font-normal transition-all hover:border-primary/40",
             !date && "text-muted-foreground",
           )}
         >
-          <CalendarIcon className="mr-2 h-3.5 w-3.5 shrink-0 opacity-60" />
-          <span className="uppercase tracking-wider">
-            {date ? format(date, "dd/MMM/yyyy") : "Set Deadline"}
-          </span>
+          <CalendarIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+          {date ? format(date, "MMM d, yyyy") : "Set a due date"}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 rounded-none border-primary/20" align="start">
+      <PopoverContent className="w-auto p-0 rounded-xl border shadow-md" align="start">
         <Calendar
           mode="single"
           selected={date}
           onSelect={onSelect}
           initialFocus
-          className="rounded-none"
         />
       </PopoverContent>
     </Popover>

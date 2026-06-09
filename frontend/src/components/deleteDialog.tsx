@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import {useDeleteTask} from "@/hooks/useTasks";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { Trash2Icon } from "lucide-react";
 
 export function DeleteDialog({
   children,
@@ -24,68 +25,50 @@ export function DeleteDialog({
   id: String;
 }) {
   const [open, setOpen] = useState(false);
-  
-
   const { mutate: deleteTask, isPending } = useDeleteTask();
 
   const handleDelete = async () => {
     deleteTask(id as string, {
       onSuccess: () => {
-        toast.success("Task deleted successfully.");
+        toast.success("Task deleted.");
         setOpen(false);
       },
       onError: () => {
-        toast.error("Failed to delete task. Please try again.");
+        toast.error("Failed to delete task.");
       },
     });
-  };
-
-  const handleCancel = () => {
-    setOpen(false);
   };
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      <AlertDialogContent className="max-w-md p-0 rounded-none border border-destructive/30 bg-background/95 backdrop-blur-2xl shadow-2xl">
-        <div className="bg-destructive/5 px-6 py-5 border-b border-destructive/20 flex justify-between items-center">
-          <div>
-            <AlertDialogTitle className="text-sm font-mono font-black uppercase tracking-[0.3em] text-destructive">
-              System <span className="text-destructive/80">Purge</span>
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mt-1 opacity-60">
-              Protocol: Irreversible Deletion
-            </AlertDialogDescription>
-          </div>
-          <div className="w-4 h-4 border border-destructive/40 flex items-center justify-center">
-            <div className="w-1.5 h-1.5 bg-destructive animate-pulse" />
+      <AlertDialogContent className="sm:max-w-sm rounded-xl border bg-card p-0 shadow-xl">
+        <div className="px-6 pt-6 pb-4 border-b">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
+              <Trash2Icon className="h-5 w-5 text-destructive" />
+            </div>
+            <div>
+              <AlertDialogTitle className="text-base font-semibold">Delete task</AlertDialogTitle>
+              <AlertDialogDescription className="text-sm text-muted-foreground mt-0.5">
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </div>
           </div>
         </div>
 
-        <div className="p-8">
-          <p className="text-xs font-mono text-foreground/70 leading-relaxed uppercase tracking-tight">
-            Warning: You are about to terminate this task protocol. All
-            associated data fragments will be purged from the orbital servers.
-            This action cannot be rescinded.
-          </p>
-        </div>
-
-        <AlertDialogFooter className="bg-secondary/10 px-8 py-6 border-t border-border/40 flex items-center gap-4">
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            className="bg-transparent hover:bg-secondary/50 border border-border/60 rounded-none h-11 px-8 text-[10px] font-mono font-bold uppercase tracking-[0.2em] transition-all duration-200"
-          >
-            Abort_Purge
-          </Button>
+        <div className="px-6 py-4 flex justify-end gap-3">
+          <AlertDialogCancel className="h-9 rounded-lg border border-input bg-background px-4 text-xs font-medium hover:bg-secondary transition-all">
+            Cancel
+          </AlertDialogCancel>
           <Button
             disabled={isPending}
             onClick={handleDelete}
-            className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-none h-11 px-10 text-[10px] font-mono font-bold uppercase tracking-[0.2em] shadow-lg shadow-destructive/20 transition-all duration-300 active:scale-[0.98] disabled:opacity-50"
+            className="h-9 rounded-lg bg-destructive hover:bg-destructive/90 text-destructive-foreground px-4 text-xs font-medium shadow-sm transition-all disabled:opacity-50"
           >
-            {isPending ? "Purging..." : "Confirm_Delete"}
+            {isPending ? "Deleting..." : "Delete"}
           </Button>
-        </AlertDialogFooter>
+        </div>
       </AlertDialogContent>
     </AlertDialog>
   );
