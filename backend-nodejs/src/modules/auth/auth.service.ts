@@ -153,8 +153,10 @@ export const forgotPassword = async (input: ForgotPasswordInput) => {
     },
   });
 
+  const message = "If an account with that email exists, a password reset link has been sent.";
+
   if (!user) {
-    throw new AppError("User with this email does not exist", 404);
+    return { message };
   }
 
   const token = crypto.randomBytes(32).toString("hex");
@@ -170,7 +172,7 @@ export const forgotPassword = async (input: ForgotPasswordInput) => {
     },
   });
 
-  return { message: "Password reset token generated and sent to email" };
+  return { message };
 };
 
 // Reset Password Service
