@@ -1,41 +1,56 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { useOrg } from "@/context/orgContext";
 import toast from "react-hot-toast";
 
-const createTask = async (data: any) => {
-  const res = await api.post("/api/task", data);
+const getTasks = async (slug: string) => {
+  const res = await api.get(`/api/org/${slug}/tasks`);
   return res.data;
 };
 
-const getTasks = async () => {
-  const res = await api.get(`/api/task`);
+const createTask = async ({ slug, data }: { slug: string; data: any }) => {
+  const res = await api.post(`/api/org/${slug}/tasks`, data);
   return res.data;
 };
 
-//update task
-const updateTask = async (data: any) => {
-  const res = await api.put(`/api/task/${data.id}`, data);
+const updateTask = async ({ slug, data }: { slug: string; data: any }) => {
+  const { id, ...rest } = data;
+  const res = await api.put(`/api/org/${slug}/tasks/${id}`, rest);
   return res.data;
 };
 
-// complete task
-const completeTask = async (data: any) => {
-  const res = await api.patch(`/api/task/${data.id}/complete`, data);
+const deleteTask = async ({ slug, id }: { slug: string; id: string }) => {
+  const res = await api.delete(`/api/org/${slug}/tasks/${id}`);
   return res.data;
 };
 
-const deleteTask = async (id: string) => {
-  const res = await api.delete(`/api/task/${id}`);
+const updateTaskStatus = async ({ slug, data }: { slug: string; data: any }) => {
+  const { id, status } = data;
+  const res = await api.patch(`/api/org/${slug}/tasks/${id}/status`, { status });
   return res.data;
 };
+
+export function useGetTasks() {
+  const { currentOrg } = useOrg();
+  const slug = currentOrg?.slug;
+
+  return useQuery({
+    queryKey: ["tasks", slug],
+    queryFn: () => getTasks(slug!),
+    enabled: !!slug,
+  });
+}
 
 export function useCreateTask() {
   const queryClient = useQueryClient();
+  const { currentOrg } = useOrg();
+  const slug = currentOrg?.slug!;
+
   return useMutation({
-    mutationFn: createTask,
+    mutationFn: (data: any) => createTask({ slug, data }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast.success("Task created successfully");
+      queryClient.invalidateQueries({ queryKey: ["tasks", slug] });
+      toast.success("Task created");
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to create task");
@@ -43,20 +58,16 @@ export function useCreateTask() {
   });
 }
 
-export function useGetTasks() {
-  return useQuery({
-    queryKey: ["tasks"],
-    queryFn: getTasks,
-  });
-}
-
 export function useUpdateTask() {
   const queryClient = useQueryClient();
+  const { currentOrg } = useOrg();
+  const slug = currentOrg?.slug!;
+
   return useMutation({
-    mutationFn: updateTask,
+    mutationFn: (data: any) => updateTask({ slug, data }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast.success("Task updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["tasks", slug] });
+      toast.success("Task updated");
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to update task");
@@ -66,25 +77,30 @@ export function useUpdateTask() {
 
 export function useCompleteTask() {
   const queryClient = useQueryClient();
+  const { currentOrg } = useOrg();
+  const slug = currentOrg?.slug!;
+
   return useMutation({
-    mutationFn: completeTask,
+    mutationFn: (data: any) => updateTaskStatus({ slug, data }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast.success("Task marked as completed");
+      queryClient.invalidateQueries({ queryKey: ["tasks", slug] });
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to complete task");
+      toast.error(error.response?.data?.message || "Failed to update task");
     },
   });
 }
 
 export function useDeleteTask() {
   const queryClient = useQueryClient();
+  const { currentOrg } = useOrg();
+  const slug = currentOrg?.slug!;
+
   return useMutation({
-    mutationFn: deleteTask,
+    mutationFn: ({ id }: { id: string }) => deleteTask({ slug, id }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast.success("Task deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["tasks", slug] });
+      toast.success("Task deleted");
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to delete task");

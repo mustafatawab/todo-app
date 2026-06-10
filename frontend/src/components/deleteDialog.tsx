@@ -28,7 +28,7 @@ export function DeleteDialog({
   const { mutate: deleteTask, isPending } = useDeleteTask();
 
   const handleDelete = async () => {
-    deleteTask(id as string, {
+    deleteTask({ id: id as string }, {
       onSuccess: () => {
         toast.success("Task deleted.");
         setOpen(false);

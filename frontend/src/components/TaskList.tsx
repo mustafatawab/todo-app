@@ -1,16 +1,16 @@
 "use client";
 import React, { useState, useMemo } from "react";
-import { SearchIcon, Loader2Icon, InboxIcon } from "lucide-react";
+import { SearchIcon, Loader2Icon, InboxIcon, ListTodoIcon, ClockIcon, CheckCircle2Icon } from "lucide-react";
 import Task from "./Task";
-import { TaskType, Priority } from "@/types/Task";
+import { TaskType, Priority, TaskStatus } from "@/types";
 import { useGetTasks } from "@/hooks/useTasks";
 
-type FilterMode = "ALL" | "ACTIVE" | "COMPLETED" | Priority;
+type FilterMode = "ALL" | "ACTIVE" | "DONE" | Priority;
 
 const FILTERS: { value: FilterMode; label: string }[] = [
   { value: "ALL", label: "All" },
   { value: "ACTIVE", label: "Active" },
-  { value: "COMPLETED", label: "Done" },
+  { value: "DONE", label: "Done" },
   { value: "URGENT", label: "Urgent" },
   { value: "HIGH", label: "High" },
 ];
@@ -22,10 +22,27 @@ const priorityOrder: Record<string, number> = {
   LOW: 3,
 };
 
+const statusIcon: Record<TaskStatus, React.ReactNode> = {
+  TODO: <ListTodoIcon className="h-3.5 w-3.5" />,
+  IN_PROGRESS: <ClockIcon className="h-3.5 w-3.5" />,
+  DONE: <CheckCircle2Icon className="h-3.5 w-3.5" />,
+};
+
 const TaskList = () => {
   const { data: tasksData, isPending } = useGetTasks();
   const [filter, setFilter] = useState<FilterMode>("ALL");
   const [search, setSearch] = useState("");
+
+  const stats = useMemo(() => {
+    if (!tasksData) return { total: 0, todo: 0, inProgress: 0, done: 0 };
+    const tasks = tasksData as TaskType[];
+    return {
+      total: tasks.length,
+      todo: tasks.filter((t) => t.status === "TODO").length,
+      inProgress: tasks.filter((t) => t.status === "IN_PROGRESS").length,
+      done: tasks.filter((t) => t.status === "DONE").length,
+    };
+  }, [tasksData]);
 
   const filteredTasks = useMemo(() => {
     if (!tasksData) return [];
@@ -43,22 +60,22 @@ const TaskList = () => {
 
     switch (filter) {
       case "ACTIVE":
-        tasks = tasks.filter((t) => !t.completed);
+        tasks = tasks.filter((t) => t.status !== "DONE");
         break;
-      case "COMPLETED":
-        tasks = tasks.filter((t) => t.completed);
+      case "DONE":
+        tasks = tasks.filter((t) => t.status === "DONE");
         break;
       case "URGENT":
-        tasks = tasks.filter((t) => t.priority === "URGENT" && !t.completed);
+        tasks = tasks.filter((t) => t.priority === "URGENT" && t.status !== "DONE");
         break;
       case "HIGH":
-        tasks = tasks.filter((t) => t.priority === "HIGH" && !t.completed);
+        tasks = tasks.filter((t) => t.priority === "HIGH" && t.status !== "DONE");
         break;
     }
 
     tasks.sort((a, b) => {
-      const aOrder = a.completed ? 999 : (priorityOrder[a.priority] ?? 99);
-      const bOrder = b.completed ? 999 : (priorityOrder[b.priority] ?? 99);
+      const aOrder = a.status === "DONE" ? 999 : (priorityOrder[a.priority] ?? 99);
+      const bOrder = b.status === "DONE" ? 999 : (priorityOrder[b.priority] ?? 99);
       return aOrder - bOrder;
     });
 
@@ -75,6 +92,13 @@ const TaskList = () => {
 
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-4 gap-3">
+        <StatCard label="Total" value={stats.total} icon={ListTodoIcon} />
+        <StatCard label="To Do" value={stats.todo} icon={ListTodoIcon} />
+        <StatCard label="In Progress" value={stats.inProgress} icon={ClockIcon} />
+        <StatCard label="Done" value={stats.done} icon={CheckCircle2Icon} />
+      </div>
+
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
@@ -128,5 +152,17 @@ const TaskList = () => {
     </div>
   );
 };
+
+function StatCard({ label, value, icon: Icon }: { label: string; value: number; icon: any }) {
+  return (
+    <div className="rounded-xl border bg-card p-3 shadow-sm">
+      <div className="flex items-center gap-2 mb-1">
+        <Icon className="h-3.5 w-3.5 text-muted-foreground/60" />
+        <span className="text-[11px] text-muted-foreground font-medium">{label}</span>
+      </div>
+      <p className="text-xl font-semibold tracking-tight">{value}</p>
+    </div>
+  );
+}
 
 export default TaskList;

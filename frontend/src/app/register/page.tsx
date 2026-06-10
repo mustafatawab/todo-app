@@ -13,14 +13,14 @@ import { useRouter } from "next/navigation";
 import { useRegisterUser } from "@/hooks/useAuth";
 import { Loader2Icon } from "lucide-react";
 
-type FormErrors = { name?: string; email?: string; password?: string };
+type FormErrors = { name?: string; username?: string; email?: string; password?: string };
 
 const Page = () => {
   const [showPass, setShowPass] = useState<boolean>(false);
   const { mutate, isPending, isError, error } = useRegisterUser();
   const router = useRouter();
 
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", username: "", email: "", password: "" });
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
@@ -29,6 +29,11 @@ const Page = () => {
     if (!field || field === "name") {
       if (!form.name.trim()) newErrors.name = "Required";
       else if (form.name.trim().length < 2) newErrors.name = "At least 2 characters";
+    }
+    if (!field || field === "username") {
+      if (!form.username.trim()) newErrors.username = "Required";
+      else if (!/^[a-z0-9_]{3,20}$/.test(form.username.trim()))
+        newErrors.username = "3-20 chars, lowercase, numbers, underscores";
     }
     if (!field || field === "email") {
       if (!form.email.trim()) newErrors.email = "Required";
@@ -58,14 +63,14 @@ const Page = () => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    setTouched({ name: true, email: true, password: true });
+    setTouched({ name: true, username: true, email: true, password: true });
     const validationErrors = validate();
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
 
     mutate(form, {
       onSuccess: () => {
-        setForm({ name: "", email: "", password: "" });
+        setForm({ name: "", username: "", email: "", password: "" });
         setErrors({});
         setTouched({});
         router.push("/login");
@@ -82,13 +87,13 @@ const Page = () => {
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">T</span>
             </div>
-            <span className="text-sm font-semibold text-foreground/60">todo</span>
+            <span className="text-sm font-semibold text-foreground/60">TaskFlow</span>
           </div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             Create an account
           </h1>
           <p className="text-sm text-muted-foreground">
-            Get started with your todo list.
+            Get started with TaskFlow.
           </p>
         </div>
 
@@ -111,6 +116,27 @@ const Page = () => {
             />
             {touched.name && errors.name && (
               <p className="text-xs text-destructive">{errors.name}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="username" className="text-sm font-medium text-foreground/80">
+              Username
+            </Label>
+            <Input
+              name="username"
+              value={form.username}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              id="username"
+              type="text"
+              placeholder="your_username"
+              className="h-11 rounded-lg border-input bg-card px-4 text-sm font-mono transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
+              required
+              aria-invalid={touched.username && !!errors.username}
+            />
+            {touched.username && errors.username && (
+              <p className="text-xs text-destructive">{errors.username}</p>
             )}
           </div>
 

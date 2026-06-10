@@ -3,7 +3,6 @@ import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-
 const authKeys = {
   all : ["auth"] as const,
   user : () => [...authKeys.all, "user"] as const
@@ -35,7 +34,6 @@ export function useRegisterUser() {
     mutationFn: registerUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.all });
-      toast.success("User Registered successfully");
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to create user");
@@ -50,7 +48,6 @@ export function useLoginUser() {
     mutationFn: loginUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.all });
-      toast.success("User Logged in successfully");
     },
   });
 }
@@ -61,9 +58,8 @@ export function useLogoutUser(){
   return useMutation({
     mutationFn : logoutUser,
     onSuccess : () => {
-      // queryClient.invalidateQueries({queryKey :  ["auth"]})
       queryClient.clear()
-      toast.success("User Logout Successfully")
+      toast.success("Logged out successfully")
       router.push("/login")
     }
   })
@@ -77,4 +73,3 @@ export function useGetCurrentUser() {
     retry : false
   });
 }
-

@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { useLoginUser } from "@/hooks/useAuth";
 
 type FormErrors = {
-  email?: string;
+  emailOrUsername?: string;
   password?: string;
 };
 
@@ -24,7 +24,7 @@ const Page = () => {
   const router = useRouter();
 
   const [form, setForm] = useState({
-    email: "",
+    emailOrUsername: "",
     password: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
@@ -32,15 +32,12 @@ const Page = () => {
 
   const validate = (field?: string): FormErrors => {
     const newErrors: FormErrors = {};
-    if (!field || field === "email") {
-      if (!form.email.trim()) newErrors.email = "Required";
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-        newErrors.email = "Invalid email";
+    if (!field || field === "emailOrUsername") {
+      if (!form.emailOrUsername.trim()) newErrors.emailOrUsername = "Required";
     }
     if (!field || field === "password") {
       if (!form.password) newErrors.password = "Required";
-      else if (form.password.length < 6)
-        newErrors.password = "At least 6 characters";
+      else if (form.password.length < 6) newErrors.password = "At least 6 characters";
     }
     return newErrors;
   };
@@ -62,14 +59,14 @@ const Page = () => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    setTouched({ email: true, password: true });
+    setTouched({ emailOrUsername: true, password: true });
     const validationErrors = validate();
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
 
     mutate(form, {
       onSuccess: () => {
-        setForm({ email: "", password: "" });
+        setForm({ emailOrUsername: "", password: "" });
         setErrors({});
         setTouched({});
         router.push("/");
@@ -86,35 +83,35 @@ const Page = () => {
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">T</span>
             </div>
-            <span className="text-sm font-semibold text-foreground/60">todo</span>
+            <span className="text-sm font-semibold text-foreground/60">TaskFlow</span>
           </div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             Welcome back
           </h1>
           <p className="text-sm text-muted-foreground">
-            Sign in to your account to continue.
+            Sign in with your email or username.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium text-foreground/80">
-              Email
+            <Label htmlFor="emailOrUsername" className="text-sm font-medium text-foreground/80">
+              Email or Username
             </Label>
             <Input
-              name="email"
-              value={form.email}
+              name="emailOrUsername"
+              value={form.emailOrUsername}
               onChange={handleChange}
               onBlur={handleBlur}
-              id="email"
-              type="email"
-              placeholder="you@example.com"
+              id="emailOrUsername"
+              type="text"
+              placeholder="you@example.com or username"
               className="h-11 rounded-lg border-input bg-card px-4 text-sm transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
               required
-              aria-invalid={touched.email && !!errors.email}
+              aria-invalid={touched.emailOrUsername && !!errors.emailOrUsername}
             />
-            {touched.email && errors.email && (
-              <p className="text-xs text-destructive">{errors.email}</p>
+            {touched.emailOrUsername && errors.emailOrUsername && (
+              <p className="text-xs text-destructive">{errors.emailOrUsername}</p>
             )}
           </div>
 
@@ -153,9 +150,7 @@ const Page = () => {
           </div>
 
           {isError && (
-            <p className="text-sm text-destructive">
-              {error.message}
-            </p>
+            <p className="text-sm text-destructive">{error.message}</p>
           )}
 
           <Button
@@ -180,17 +175,11 @@ const Page = () => {
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <Button
-            variant="outline"
-            className="h-11 rounded-lg border-input bg-card hover:bg-secondary transition-all duration-200"
-          >
+          <Button variant="outline" className="h-11 rounded-lg border-input bg-card hover:bg-secondary transition-all duration-200">
             <Image src="/google.png" alt="Google" width={16} height={16} className="mr-2" />
             <span className="text-sm">Google</span>
           </Button>
-          <Button
-            variant="outline"
-            className="h-11 rounded-lg border-input bg-card hover:bg-secondary transition-all duration-200"
-          >
+          <Button variant="outline" className="h-11 rounded-lg border-input bg-card hover:bg-secondary transition-all duration-200">
             <FaGithub className="w-4 h-4 mr-2" />
             <span className="text-sm">GitHub</span>
           </Button>

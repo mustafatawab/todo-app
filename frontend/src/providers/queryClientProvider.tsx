@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { AuthProvider } from "@/context/authContext";
+import { OrgProvider } from "@/context/orgContext";
 
 export default function QueryProvider({
   children,
@@ -23,7 +24,11 @@ export default function QueryProvider({
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+        <OrgProvider>
+          {children}
+        </OrgProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

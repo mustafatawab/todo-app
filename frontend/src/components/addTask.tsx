@@ -14,12 +14,14 @@ import { FaPlus } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 import { useCreateTask } from "@/hooks/useTasks";
 import { DatePicker } from "./DatePicker";
-import type { Priority } from "@/types/Task";
+import { api } from "@/lib/api";
+import { useOrg } from "@/context/orgContext";
+import type { Priority, TaskStatus, Member } from "@/types";
 
 const PRIORITIES: { value: Priority; label: string }[] = [
   { value: "LOW", label: "Low" },
@@ -28,16 +30,33 @@ const PRIORITIES: { value: Priority; label: string }[] = [
   { value: "URGENT", label: "Urgent" },
 ];
 
-const AddTask = ({ userId }: { userId: String }) => {
+const STATUSES: { value: TaskStatus; label: string }[] = [
+  { value: "TODO", label: "To Do" },
+  { value: "IN_PROGRESS", label: "In Progress" },
+  { value: "DONE", label: "Done" },
+];
+
+const AddTask = () => {
   const { mutate: createTask, isPending } = useCreateTask();
+  const { currentOrg } = useOrg();
+  const [members, setMembers] = useState<Member[]>([]);
+
   const [taskForm, setTaskForm] = useState({
     title: "",
     description: "",
     priority: "MEDIUM" as Priority,
+    status: "TODO" as TaskStatus,
     dueDate: undefined as Date | undefined,
+    assigneeId: "" as string,
   });
 
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (open && currentOrg) {
+      api.get(`/api/org/${currentOrg.slug}/members`).then((res) => setMembers(res.data)).catch(() => {});
+    }
+  }, [open, currentOrg]);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -50,12 +69,14 @@ const AddTask = ({ userId }: { userId: String }) => {
         title: taskForm.title,
         description: taskForm.description,
         priority: taskForm.priority,
+        status: taskForm.status,
         dueDate: taskForm.dueDate ? taskForm.dueDate.toISOString() : null,
+        assigneeId: taskForm.assigneeId || undefined,
       },
       {
         onSuccess: () => {
           setOpen(false);
-          setTaskForm({ title: "", description: "", priority: "MEDIUM", dueDate: undefined });
+          setTaskForm({ title: "", description: "", priority: "MEDIUM", status: "TODO", dueDate: undefined, assigneeId: "" });
         },
         onError: (error: any) => {
           toast.error(error?.response?.data?.message || error?.message || "Failed to create task");
@@ -94,32 +115,68 @@ const AddTask = ({ userId }: { userId: String }) => {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground/80">Priority</Label>
-            <div className="flex gap-2">
-              {PRIORITIES.map((p) => (
-                <button
-                  key={p.value}
-                  type="button"
-                  onClick={() => setTaskForm((prev) => ({ ...prev, priority: p.value }))}
-                  className={`flex-1 h-9 rounded-lg text-xs font-medium transition-all duration-200 ${
-                    taskForm.priority === p.value
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                  }`}
-                >
-                  {p.label}
-                </button>
-              ))}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground/80">Priority</Label>
+              <div className="flex gap-1.5">
+                {PRIORITIES.map((p) => (
+                  <button
+                    key={p.value}
+                    type="button"
+                    onClick={() => setTaskForm((prev) => ({ ...prev, priority: p.value }))}
+                    className={`flex-1 h-9 rounded-lg text-xs font-medium transition-all duration-200 ${
+                      taskForm.priority === p.value
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground/80">Status</Label>
+              <div className="flex gap-1.5">
+                {STATUSES.map((s) => (
+                  <button
+                    key={s.value}
+                    type="button"
+                    onClick={() => setTaskForm((prev) => ({ ...prev, status: s.value }))}
+                    className={`flex-1 h-9 rounded-lg text-xs font-medium transition-all duration-200 ${
+                      taskForm.status === s.value
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground/80">Due date</Label>
-            <DatePicker
-              date={taskForm.dueDate}
-              onSelect={(date) => setTaskForm((prev) => ({ ...prev, dueDate: date }))}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground/80">Due date</Label>
+              <DatePicker
+                date={taskForm.dueDate}
+                onSelect={(date) => setTaskForm((prev) => ({ ...prev, dueDate: date }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground/80">Assignee</Label>
+              <select
+                value={taskForm.assigneeId}
+                onChange={(e) => setTaskForm((prev) => ({ ...prev, assigneeId: e.target.value }))}
+                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              >
+                <option value="">Unassigned</option>
+                {members.map((m) => (
+                  <option key={m.id} value={m.userId}>{m.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="space-y-2">
