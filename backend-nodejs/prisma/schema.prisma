@@ -7,33 +7,9 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id            String    @id @unique @default(uuid()) @map("user_id")
-  name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
-  password      String
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
-  sessions      Session[]
-  tasks         Task[]
-  passwordResets PasswordReset[]
-
-  @@map("user")
-}
-
-model Session {
-  id        String    @id @unique @default(uuid())
-  expiresAt DateTime?
-  token     String?    @unique()
-  createdAt DateTime  @default(now())
-  ipAddress String?
-  device    String?
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("session")
+enum Role {
+  ADMIN
+  MEMBER
 }
 
 enum Priority {
@@ -43,30 +19,100 @@ enum Priority {
   URGENT
 }
 
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  username  String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  sessions        Session[]
+  passwordResets  PasswordReset[]
+  orgMemberships  OrgMember[]
+  createdTasks    Task[]        @relation("CreatedTasks")
+  assignedTasks   Task[]        @relation("AssignedTasks")
+
+  @@map("user")
+}
+
+model Session {
+  id        String    @id @default(uuid())
+  token     String?   @unique
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  ipAddress String?
+  device    String?
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+
+  members OrgMember[]
+  tasks   Task[]
+
+  @@map("organization")
+}
+
+model OrgMember {
+  id        String   @id @default(uuid())
+  role      Role     @default(MEMBER)
+  joinedAt  DateTime @default(now())
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, orgId])
+  @@map("org_member")
+}
+
 model Task {
-  id          String    @id @default(uuid())
+  id          String      @id @default(uuid())
   title       String
   description String?
-  completed   Boolean   @default(false)
-  priority    Priority  @default(MEDIUM)
+  status      TaskStatus  @default(TODO)
+  priority    Priority    @default(MEDIUM)
   dueDate     DateTime?
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  createdById String
+  createdBy   User   @relation("CreatedTasks", fields: [createdById], references: [id])
+
+  assignedToId String?
+  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id])
+
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
   @@map("task")
 }
 
-
 model PasswordReset {
-  id       String    @id @default(uuid())
-  token     String    @unique
+  id        String   @id @default(uuid())
+  token     String   @unique
   expiresAt DateTime
   userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime  @default(now())
-
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 
   @@map("password_reset")
 }
+
