@@ -2,6 +2,7 @@ import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import { authRouter } from "./src/modules/auth/auth.router";
 import { todoRouter } from "./src/modules/todo/todo.router";
+import { orgRouter } from "./src/modules/organization/org.router";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./src/shared/config/swagger";
@@ -31,6 +32,8 @@ app.use("/api/auth", authRouter);
 app.use(authMiddleware);
 
 app.use("/api/task", todoRouter);
+
+app.use("/api/org" , orgRouter)
 
 // Error handling middleware (must be last)
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

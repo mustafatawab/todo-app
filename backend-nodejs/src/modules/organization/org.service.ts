@@ -1,4 +1,7 @@
-import type { CreateOrganizationInput } from "./org.schema";
+import type {
+  CreateOrganizationInput,
+  JoinOrganizationInput,
+} from "./org.schema";
 import { prisma } from "../../shared/lib/prisma";
 import { AppError } from "../../shared/error/AppError";
 
@@ -42,6 +45,8 @@ export const createOrganization = async (
   return organization;
 };
 
+
+// ============== List User Organizations
 export const listUserOrganizations = async (userId: string) => {
   const memberships = await prisma.orgMember.findMany({
     where: {
@@ -56,6 +61,41 @@ export const listUserOrganizations = async (userId: string) => {
     id: m.org.id,
     name: m.org.name,
     slug: m.org.slug,
+    role: m.role,
     createdAt: m.org.createdAt,
   }));
+};
+
+
+
+// ========= Join Organization
+export const joinOrganization = async (
+  input: JoinOrganizationInput,
+  userId: string,
+) => {
+  const org = await prisma.organization.findUnique({
+    where: { inviteCode: input.code },
+  });
+
+  if (!org) {
+    throw new AppError("Organization Invite Code is incorrect", 404);
+  }
+
+  const member = await prisma.orgMember.findFirst({
+    where: { userId: userId, orgId: org.id },
+  });
+
+  if (member) {
+    throw new AppError(`Already the member of ${org.name}`, 409);
+  }
+
+  await prisma.orgMember.create({
+    data: {
+      userId,
+      role: "MEMBER",
+      orgId: org.id,
+    },
+  });
+
+  return { message: "Joined Successfully", slug: org.slug };
 };

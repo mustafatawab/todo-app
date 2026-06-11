@@ -1,5 +1,5 @@
-import { createOrganizationSchema } from "./org.schema";
-import { createOrganization, listUserOrganizations } from "./org.service";
+import { createOrganizationSchema, joinOrganizationSchema } from "./org.schema";
+import { createOrganization, joinOrganization, listUserOrganizations } from "./org.service";
 import type { Request, Response, NextFunction } from "express";
 
 export const createOrgHandler = async (
@@ -32,3 +32,16 @@ export const listUserOrghandler = async (
     return next(error);
   }
 };
+
+
+export const joinOrganizationHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const validatedBody = joinOrganizationSchema.parse(req.body)
+
+    const result = await joinOrganization(validatedBody, req.user!.userId)
+
+    return res.status(200).json(result)
+  } catch (error) {
+    return next(error)
+  }
+}

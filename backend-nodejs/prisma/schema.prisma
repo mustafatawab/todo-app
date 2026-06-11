@@ -61,7 +61,7 @@ model Organization {
   name      String
   slug      String   @unique
   createdAt DateTime @default(now())
-
+  inviteCode String   @unique @default(uuid())
   members OrgMember[]
   tasks   Task[]
 
