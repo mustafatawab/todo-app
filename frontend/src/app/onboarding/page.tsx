@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
 import { useOrg } from "@/context/orgContext";
+import { useCreateOrganization, useJoinOrganization } from "@/hooks/useOrganizations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,41 +15,25 @@ export default function OnboardingPage() {
   const { refreshOrgs } = useOrg();
 
   const [createName, setCreateName] = useState("");
-  const [createLoading, setCreateLoading] = useState(false);
-
   const [inviteCode, setInviteCode] = useState("");
-  const [joinLoading, setJoinLoading] = useState(false);
+
+  const { mutateAsync: createOrg, isPending: createLoading } = useCreateOrganization();
+  const { mutateAsync: joinOrg, isPending: joinLoading } = useJoinOrganization();
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!createName.trim()) return;
-    setCreateLoading(true);
-    try {
-      await api.post("/api/org", { name: createName.trim() });
-      await refreshOrgs();
-      toast.success("Organization created!");
-      router.push(`/org/${createName.trim().toLowerCase().replace(/\s+/g, "-")}`);
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to create organization");
-    } finally {
-      setCreateLoading(false);
-    }
+    await createOrg(createName.trim());
+    refreshOrgs();
+    router.push(`/org/${createName.trim().toLowerCase().replace(/\s+/g, "-")}`);
   };
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inviteCode.trim()) return;
-    setJoinLoading(true);
-    try {
-      const res = await api.post("/api/org/join", { code: inviteCode.trim() });
-      await refreshOrgs();
-      toast.success("Joined organization!");
-      router.push(`/org/${res.data.slug}`);
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to join organization");
-    } finally {
-      setJoinLoading(false);
-    }
+    const res = await joinOrg(inviteCode.trim());
+    refreshOrgs();
+    router.push(`/org/${res.slug}`);
   };
 
   return (

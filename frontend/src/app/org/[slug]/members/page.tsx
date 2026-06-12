@@ -1,8 +1,8 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useOrg } from "@/context/orgContext";
-import { api } from "@/lib/api";
+import { useGetMembers, useAddMember, useRemoveMember, useChangeMemberRole } from "@/hooks/useMembers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,34 +18,19 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Loader2Icon, ArrowLeftIcon, UserPlusIcon, ShieldIcon, Trash2Icon, ShieldCheckIcon } from "lucide-react";
 import Link from "next/link";
-import toast from "react-hot-toast";
-import type { Member, Role } from "@/types";
+import type { Role } from "@/types";
 
 export default function MembersPage() {
   const { currentOrg, role } = useOrg();
   const router = useRouter();
-  const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: members = [], isLoading: loading } = useGetMembers();
 
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteForm, setInviteForm] = useState({ name: "", username: "", email: "", password: "" });
-  const [inviteLoading, setInviteLoading] = useState(false);
 
-  const fetchMembers = useCallback(async () => {
-    if (!currentOrg) return;
-    try {
-      const res = await api.get(`/api/org/${currentOrg.slug}/members`);
-      setMembers(res.data);
-    } catch {
-      setMembers([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentOrg]);
-
-  useEffect(() => {
-    fetchMembers();
-  }, [fetchMembers]);
+  const { mutateAsync: addMember, isPending: inviteLoading } = useAddMember();
+  const { mutateAsync: removeMember } = useRemoveMember();
+  const { mutateAsync: changeRole } = useChangeMemberRole();
 
   if (!currentOrg) {
     return (
@@ -66,38 +51,17 @@ export default function MembersPage() {
 
   const handleAddMember = async () => {
     if (!inviteForm.name.trim() || !inviteForm.email.trim() || !inviteForm.password.trim()) return;
-    setInviteLoading(true);
-    try {
-      await api.post(`/api/org/${currentOrg.slug}/members`, inviteForm);
-      toast.success("Member added successfully!");
-      setInviteOpen(false);
-      setInviteForm({ name: "", username: "", email: "", password: "" });
-      fetchMembers();
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to add member");
-    } finally {
-      setInviteLoading(false);
-    }
+    await addMember(inviteForm);
+    setInviteOpen(false);
+    setInviteForm({ name: "", username: "", email: "", password: "" });
   };
 
   const handleRemoveMember = async (userId: string) => {
-    try {
-      await api.delete(`/api/org/${currentOrg.slug}/members/${userId}`);
-      toast.success("Member removed");
-      fetchMembers();
-    } catch {
-      toast.error("Failed to remove member");
-    }
+    await removeMember(userId);
   };
 
   const handleChangeRole = async (userId: string, newRole: Role) => {
-    try {
-      await api.patch(`/api/org/${currentOrg.slug}/members/${userId}/role`, { role: newRole });
-      toast.success(`Member ${newRole === "ADMIN" ? "promoted to admin" : "demoted to member"}`);
-      fetchMembers();
-    } catch {
-      toast.error("Failed to update role");
-    }
+    await changeRole({ userId, role: newRole });
   };
 
   return (

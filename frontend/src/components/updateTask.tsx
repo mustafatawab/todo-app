@@ -15,14 +15,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2Icon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 import { useUpdateTask } from "@/hooks/useTasks";
+import { useGetMembers } from "@/hooks/useMembers";
 import { DatePicker } from "./DatePicker";
-import { api } from "@/lib/api";
 import { useOrg } from "@/context/orgContext";
-import type { Priority, TaskType, TaskStatus, Member } from "@/types";
+import type { Priority, TaskType, TaskStatus } from "@/types";
 
 const PRIORITIES: { value: Priority; label: string }[] = [
   { value: "LOW", label: "Low" },
@@ -40,7 +40,7 @@ const STATUSES: { value: TaskStatus; label: string }[] = [
 const UpdateTask = ({ data }: { data: TaskType }) => {
   const { mutate: updateTask, isPending } = useUpdateTask();
   const { currentOrg } = useOrg();
-  const [members, setMembers] = useState<Member[]>([]);
+  const { data: members = [] } = useGetMembers();
 
   const [taskForm, setTaskForm] = useState({
     title: data.title,
@@ -52,12 +52,6 @@ const UpdateTask = ({ data }: { data: TaskType }) => {
   });
 
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (open && currentOrg) {
-      api.get(`/api/org/${currentOrg.slug}/members`).then((res) => setMembers(res.data)).catch(() => {});
-    }
-  }, [open, currentOrg]);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
