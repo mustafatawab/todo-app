@@ -1,10 +1,5 @@
 "use client";
-import React, {
-  createContext,
-  useContext,
-  ReactNode,
-  useEffect,
-} from "react";
+import React, { createContext, useContext, ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useGetCurrentUser } from "@/hooks/useAuth";
@@ -27,10 +22,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
-  const {
-    data: currentUser,
-    isPending,
-  } = useGetCurrentUser();
+  const { data: currentUser, isPending } = useGetCurrentUser();
 
   useEffect(() => {
     const handleExpireSession = () => {
@@ -41,10 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.addEventListener("auth:session-expired", handleExpireSession);
 
     return () => {
-      window.removeEventListener(
-        "auth:session-expired",
-        handleExpireSession
-      );
+      window.removeEventListener("auth:session-expired", handleExpireSession);
     };
   }, [router]);
 

@@ -70,10 +70,21 @@ const AddTask = () => {
       {
         onSuccess: () => {
           setOpen(false);
-          setTaskForm({ title: "", description: "", priority: "MEDIUM", status: "TODO", dueDate: undefined, assigneeId: "" });
+          setTaskForm({
+            title: "",
+            description: "",
+            priority: "MEDIUM",
+            status: "TODO",
+            dueDate: undefined,
+            assigneeId: "",
+          });
         },
         onError: (error: any) => {
-          toast.error(error?.response?.data?.message || error?.message || "Failed to create task");
+          toast.error(
+            error?.response?.data?.message ||
+              error?.message ||
+              "Failed to create task",
+          );
         },
       },
     );
@@ -89,7 +100,9 @@ const AddTask = () => {
       </AlertDialogTrigger>
       <AlertDialogContent className="sm:max-w-md rounded-xl border bg-card p-0 shadow-xl">
         <div className="px-6 pt-6 pb-4 border-b">
-          <AlertDialogTitle className="text-base font-semibold">New Task</AlertDialogTitle>
+          <AlertDialogTitle className="text-base font-semibold">
+            New Task
+          </AlertDialogTitle>
           <AlertDialogDescription className="text-sm text-muted-foreground mt-1">
             Create a new task to track.
           </AlertDialogDescription>
@@ -97,7 +110,9 @@ const AddTask = () => {
 
         <div className="px-6 py-5 space-y-5">
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground/80">Title</Label>
+            <Label className="text-sm font-medium text-foreground/80">
+              Title
+            </Label>
             <Input
               className="h-10 rounded-lg border-input bg-background px-3 text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
               type="text"
@@ -111,13 +126,17 @@ const AddTask = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-foreground/80">Priority</Label>
+              <Label className="text-sm font-medium text-foreground/80">
+                Priority
+              </Label>
               <div className="flex gap-1.5">
                 {PRIORITIES.map((p) => (
                   <button
                     key={p.value}
                     type="button"
-                    onClick={() => setTaskForm((prev) => ({ ...prev, priority: p.value }))}
+                    onClick={() =>
+                      setTaskForm((prev) => ({ ...prev, priority: p.value }))
+                    }
                     className={`flex-1 h-9 rounded-lg text-xs font-medium transition-all duration-200 ${
                       taskForm.priority === p.value
                         ? "bg-primary text-primary-foreground shadow-sm"
@@ -130,13 +149,17 @@ const AddTask = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-foreground/80">Status</Label>
+              <Label className="text-sm font-medium text-foreground/80">
+                Status
+              </Label>
               <div className="flex gap-1.5">
                 {STATUSES.map((s) => (
                   <button
                     key={s.value}
                     type="button"
-                    onClick={() => setTaskForm((prev) => ({ ...prev, status: s.value }))}
+                    onClick={() =>
+                      setTaskForm((prev) => ({ ...prev, status: s.value }))
+                    }
                     className={`flex-1 h-9 rounded-lg text-xs font-medium transition-all duration-200 ${
                       taskForm.status === s.value
                         ? "bg-primary text-primary-foreground shadow-sm"
@@ -152,29 +175,44 @@ const AddTask = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-foreground/80">Due date</Label>
+              <Label className="text-sm font-medium text-foreground/80">
+                Due date
+              </Label>
               <DatePicker
                 date={taskForm.dueDate}
-                onSelect={(date) => setTaskForm((prev) => ({ ...prev, dueDate: date }))}
+                onSelect={(date) =>
+                  setTaskForm((prev) => ({ ...prev, dueDate: date }))
+                }
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-foreground/80">Assignee</Label>
+              <Label className="text-sm font-medium text-foreground/80">
+                Assignee
+              </Label>
               <select
                 value={taskForm.assigneeId}
-                onChange={(e) => setTaskForm((prev) => ({ ...prev, assigneeId: e.target.value }))}
+                onChange={(e) =>
+                  setTaskForm((prev) => ({
+                    ...prev,
+                    assigneeId: e.target.value,
+                  }))
+                }
                 className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
               >
                 <option value="">Unassigned</option>
                 {members.map((m) => (
-                  <option key={m.id} value={m.userId}>{m.name}</option>
+                  <option key={m.id} value={m.userId}>
+                    {m.name}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground/80">Description</Label>
+            <Label className="text-sm font-medium text-foreground/80">
+              Description
+            </Label>
             <Textarea
               name="description"
               value={taskForm.description}

@@ -1,5 +1,12 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  ReactNode,
+} from "react";
 import { useRouter } from "next/navigation";
 import { useGetOrganizations } from "@/hooks/useOrganizations";
 import type { Organization, Role } from "@/types";
@@ -30,19 +37,31 @@ export function OrgProvider({ children }: { children: ReactNode }) {
     setCurrentOrg(match);
   }, [orgs]);
 
-  const switchOrg = useCallback((slug: string) => {
-    const org = orgs.find((o) => o.slug === slug);
-    if (org) {
-      setCurrentOrg(org);
-      localStorage.setItem("currentOrgSlug", slug);
-      router.push(`/org/${slug}`);
-    }
-  }, [orgs, router]);
+  const switchOrg = useCallback(
+    (slug: string) => {
+      const org = orgs.find((o) => o.slug === slug);
+      if (org) {
+        setCurrentOrg(org);
+        localStorage.setItem("currentOrgSlug", slug);
+        router.push(`/org/${slug}`);
+      }
+    },
+    [orgs, router],
+  );
 
   const role = currentOrg?.role ?? null;
 
   return (
-    <OrgContext.Provider value={{ orgs, currentOrg, role, loading: isLoading, switchOrg, refreshOrgs: refetch }}>
+    <OrgContext.Provider
+      value={{
+        orgs,
+        currentOrg,
+        role,
+        loading: isLoading,
+        switchOrg,
+        refreshOrgs: refetch,
+      }}
+    >
       {children}
     </OrgContext.Provider>
   );
