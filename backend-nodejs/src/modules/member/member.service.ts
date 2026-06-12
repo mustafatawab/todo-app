@@ -1,8 +1,7 @@
-import type { CreateMemberInput } from "./member.schema";
+import type { CreateMemberInput, UpdateMemberInput } from "./member.schema";
 import { prisma } from "../../shared/lib/prisma";
 import { AppError } from "../../shared/error/AppError";
 import { hashPassword } from "../../shared/utils/hash";
-
 
 /*
 1. GET /api/org/:slug/members
@@ -35,14 +34,21 @@ import { hashPassword } from "../../shared/utils/hash";
 { "message": "Member role updated" }
 */
 
-export const getMembers = async (orgId : string) => {
-    const org = await prisma.organization.findMany()
+export const getMembers = async (orgId: string) => {
+  const orgMembers = await prisma.orgMember.findMany({
+    where: { orgId },
+    include: { user: true, org: true },
+  });
 
-}
-
-
-
-
+  return orgMembers.map((m) => ({
+    id: m.id,
+    userId: m.user.id,
+    name: m.user.name,
+    email: m.user.email,
+    role: m.role,
+    joinedAt: m.joinedAt,
+  }));
+};
 
 export const createMember = async (input: CreateMemberInput, orgId: string) => {
   const { name, email, username, password } = input;
@@ -93,5 +99,38 @@ export const createMember = async (input: CreateMemberInput, orgId: string) => {
   //     },
   //   });
 
-  return { message: "User has been created successfully" };
+  return { message: "Member added successfully" };
+};
+
+export const updateMember = async (
+  input: UpdateMemberInput,
+  orgId: string,
+  userId: string,
+) => {
+  const updated = await prisma.orgMember.update({
+    where: {
+      userId_orgId: {
+        userId,
+        orgId,
+      },
+    },
+    data: {
+      role: input.role,
+    },
+  });
+
+  return {message : "Member role updated"};
+};
+
+export const deleteMember = async (orgId: string, userId: string) => {
+  await prisma.orgMember.delete({
+    where: {
+      userId_orgId: {
+        orgId,
+        userId,
+      },
+    },
+  });
+
+  return { message: "Member deleted successfully" };
 };

@@ -1,9 +1,15 @@
 import { requireOrgAdmin } from "../../shared/middleware/requireOrgAdmin.middleware";
-import { createMemberHandler } from "./member.controller";
+import { createMemberHandler, deleteMemberHandler, getMembersHandlers, updateMembersHandler } from "./member.controller";
 import { Router } from "express";
 
 const router = Router();
 
-router.post("/:slug", requireOrgAdmin, createMemberHandler);
+router.post("", createMemberHandler);
+
+router.get(""  , getMembersHandlers)
+
+router.patch("/:userId/role"  , updateMembersHandler)
+
+router.delete("/:userId"  , deleteMemberHandler)
 
 export { router as memberRouter };

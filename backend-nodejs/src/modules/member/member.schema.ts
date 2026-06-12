@@ -8,4 +8,10 @@ export const createMemberSchema = z.object({
 })
 
 
+export const updateMemberSchema = z.object({
+   role : z.enum(["ADMIN" , "MEMBER"])
+})
+
+
 export type CreateMemberInput = z.infer<typeof createMemberSchema>
+export type UpdateMemberInput = z.infer<typeof updateMemberSchema>
