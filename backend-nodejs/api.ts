@@ -32,7 +32,7 @@ app.use("/api/auth", authRouter);
 
 app.use(authMiddleware);
 
-app.use("/api/task", todoRouter);
+app.use("/api/org", todoRouter);
 
 app.use("/api/org" ,  orgRouter)
 

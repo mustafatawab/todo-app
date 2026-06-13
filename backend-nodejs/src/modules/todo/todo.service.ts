@@ -1,27 +1,37 @@
 import type {
   TodoCreateInput,
   TodoUpdateInput,
-  TodoCompleteInput,
+  TodoStatusInput,
 } from "./todo.schema";
 import { prisma } from "../../shared/lib/prisma";
 import { AppError } from "../../shared/error/AppError";
 
-// Create Todo service
-export const createTodo = async (input: TodoCreateInput, userId: string) => {
+// ============== Create Todo service
+export const createTodo = async (
+  input: TodoCreateInput,
+  orgId: string,
+  userdId: string,
+) => {
   const { title, description, priority, dueDate } = input;
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const org = await prisma.organization.findUnique({ where: { id: orgId } });
 
-  if (!user) {
-    throw new AppError("User not found while createing the todo  ", 404);
+  if (!org) {
+    throw new AppError(
+      "Organization not found while createing the todo  ",
+      404,
+    );
   }
+
+  const user = await prisma.user.findUnique({ where: { id: userdId } });
 
   const task = await prisma.task.create({
     data: {
-      user: { connect: { id: userId } },
+      orgId: org.id,
+      createdById: user!.id,
       title,
       description: description || null,
-      priority: priority || "MEDIUM",
+      priority: priority,
       dueDate: dueDate ? new Date(dueDate) : null,
     },
   });
@@ -29,8 +39,17 @@ export const createTodo = async (input: TodoCreateInput, userId: string) => {
   return task;
 };
 
-// list all todo service
-export const listAllTodo = async (userId: string) => {
+// =================== list all todo service
+export const listAllTodo = async (userId: string, orgId: string) => {
+  const org = await prisma.organization.findUnique({ where: { id: orgId } });
+
+  if (!org) {
+    throw new AppError(
+      "Organization not found while listing the ALL todos ",
+      404,
+    );
+  }
+
   const user = await prisma.user.findUnique({ where: { id: userId } });
 
   if (!user) {
@@ -38,50 +57,80 @@ export const listAllTodo = async (userId: string) => {
   }
 
   const tasks = await prisma.task.findMany({
-    where: { userId },
+    where: { userId, orgId },
   });
 
   return tasks;
 };
 
-// Update Todo Service
+// ================= Update Todo Service
 export const updateTodo = async (
   input: TodoUpdateInput,
   userId: string,
   taskId: string,
+  orgId: string,
 ) => {
+  const org = await prisma.organization.findUnique({ where: { id: orgId } });
+
+  if (!org) {
+    throw new AppError(
+      "Organization not found while listing the ALL todos ",
+      404,
+    );
+  }
+
   const user = await prisma.user.findUnique({ where: { id: userId } });
 
   if (!user) {
-    throw new AppError("User not found while createing the todo  ", 404);
+    throw new AppError("User not found while updating the todo  ", 404);
   }
 
-  const existing = await prisma.task.findUnique({ where: { id: taskId, userId } });
+  const existing = await prisma.task.findUnique({
+    where: { id: taskId, userId, orgId },
+  });
 
   if (!existing) {
     throw new AppError(`Task not found for the ${user.name} `, 404);
   }
 
   const updatedTask = await prisma.task.update({
-    where: { id: taskId, userId },
+    where: { id: taskId, userId, orgId },
     data: {
       title: input.title ?? existing.title,
-      description: input.description !== undefined ? input.description : existing.description,
+      description:
+        input.description !== undefined
+          ? input.description
+          : existing.description,
       priority: (input.priority as any) ?? (existing as any).priority,
-      dueDate: input.dueDate !== undefined ? (input.dueDate ? new Date(input.dueDate) : null) : (existing as any).dueDate,
-      completed: existing.completed,
+      dueDate:
+        input.dueDate !== undefined
+          ? input.dueDate
+            ? new Date(input.dueDate)
+            : null
+          : (existing as any).dueDate,
+      status: existing.status,
     },
   });
 
   return updatedTask;
 };
 
-//  Complete Todo Service
-export const completeTodo = async (
-  input: TodoCompleteInput,
+//  =============== Status Todo Service
+export const statusUpdateTodo = async (
+  input: TodoStatusInput,
   userId: string,
   taskId: string,
+  orgId: string,
 ) => {
+  const org = await prisma.organization.findUnique({ where: { id: orgId } });
+
+  if (!org) {
+    throw new AppError(
+      "Organization not found while Updating Status the  todo ",
+      404,
+    );
+  }
+
   const user = await prisma.user.findUnique({ where: { id: userId } });
 
   if (!user) {
@@ -91,21 +140,37 @@ export const completeTodo = async (
     );
   }
 
-  const task = await prisma.task.findUnique({ where: { id: taskId, userId } });
+  const task = await prisma.task.findUnique({
+    where: { id: taskId, userId, orgId },
+  });
 
   if (!task) {
     throw new AppError(`Task not found for the ${user.name} `, 404);
   }
 
-  const completedTask = await prisma.task.update({
-    where: { id: taskId, userId },
-    data: { completed: input.completed },
+  const statusTask = await prisma.task.update({
+    where: { id: task.id, userId, orgId },
+    data: {
+      status: (input.status as any) ?? task.status,
+    },
   });
-
-  return completedTask;
 };
 
-export const deleteTodo = async (userId: string, taskId: string) => {
+
+
+
+// ============== Delete Todo
+export const deleteTodo = async (
+  userId: string,
+  taskId: string,
+  orgId: string,
+) => {
+  const org = await prisma.organization.findUnique({ where: { id: orgId } });
+
+  if (!org) {
+    throw new AppError("Organization not found while deleting the  todo ", 404);
+  }
+
   const user = await prisma.user.findUnique({ where: { id: userId } });
 
   if (!user) {
@@ -115,14 +180,16 @@ export const deleteTodo = async (userId: string, taskId: string) => {
     );
   }
 
-  const task = await prisma.task.findUnique({ where: { id: taskId, userId } });
+  const task = await prisma.task.findUnique({
+    where: { id: taskId, userId, orgId },
+  });
 
   if (!task) {
     throw new AppError(`Task not found for the ${user.name} `, 404);
   }
 
   const deletedTask = await prisma.task.delete({
-    where: { id: taskId, userId },
+    where: { id: taskId, userId, orgId },
   });
 
   return deletedTask;

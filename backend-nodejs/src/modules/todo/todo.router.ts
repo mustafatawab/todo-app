@@ -2,7 +2,7 @@ import Router from "express";
 import {
   createTodoHandler,
   updateTodoHandler,
-  completeTodoHandler,
+  statusChangeTodoHandler,
   deleteTodoHandler,
   listAllTodoHandler
 
@@ -17,7 +17,7 @@ router.post("/", createTodoHandler);
 
 router.put("/:id", updateTodoHandler);
 
-router.patch("/:id/complete", completeTodoHandler);
+router.patch("/:id/status", statusChangeTodoHandler);
 
 router.delete("/:id", deleteTodoHandler);
 

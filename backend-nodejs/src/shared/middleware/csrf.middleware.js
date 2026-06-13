@@ -1,0 +1,60 @@
+import crypto from "crypto";
+import { AppError } from "../error/AppError";
+export const generateCsrfToken = () => {
+    return crypto.randomBytes(24).toString("hex");
+};
+export const setCsrfTokenCookie = (res, csrfToken) => {
+    console.log("CSRF Token is ", csrfToken);
+    res.cookie("csrfToken", csrfToken, {
+        httpOnly: false,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        sameSite: "strict",
+    });
+};
+export const clearCsrfTokenCookie = (res) => {
+    res.clearCookie("csrfToken");
+};
+const CSRF_SAFE_PATH = [
+    "/api/auth/register",
+    "/api/auth/login",
+    "/api/auth/refresh-token",
+    "/api/auth/reset-password",
+    "/api/auth/forgot-password",
+    "/api/auth/logout",
+];
+const SAFE_METHODS = ["GET", "HEAD", "OPTIONS"];
+const isCsrfExempt = (path) => {
+    return CSRF_SAFE_PATH.some((exemptPath) => exemptPath == path || path.startsWith(exemptPath));
+};
+export const csrfMiddleware = (req, res, next) => {
+    const csrfTokenFromCookie = req.cookies["csrfToken"];
+    const csrfTokenFromHeader = req.headers["x-csrf-token"];
+    if (SAFE_METHODS.includes(req.method)) {
+        return next();
+    }
+    const fullPaths = req.originalUrl.split("?")[0];
+    if (fullPaths.startsWith("/api-docs")) {
+        return next();
+    }
+    if (isCsrfExempt(fullPaths)) {
+        return next();
+    }
+    if (!csrfTokenFromCookie || !csrfTokenFromHeader) {
+        return res.status(403).json({
+            message: "CSRF Tokens are missing",
+        });
+    }
+    if (!csrfTokenFromCookie ||
+        !csrfTokenFromHeader ||
+        csrfTokenFromCookie.length !== csrfTokenFromHeader.length // 👈 Check length first!
+    ) {
+        return res.status(403).json({ message: "Invalid CSRF Token" });
+    }
+    if (!crypto.timingSafeEqual(Buffer.from(csrfTokenFromCookie), Buffer.from(csrfTokenFromHeader))) {
+        return res.status(403).json({
+            message: "Invalid CSRF Token",
+        });
+    }
+    next();
+};
+//# sourceMappingURL=csrf.middleware.js.map

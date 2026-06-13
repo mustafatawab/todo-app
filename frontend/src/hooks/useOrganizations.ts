@@ -9,11 +9,14 @@ const getOrganizations = async (): Promise<Organization[]> => {
 };
 
 const createOrganization = async (name: string) => {
+  console.log("Name of the org ", name);
   const res = await api.post("/api/org", { name });
   return res.data;
 };
 
-const joinOrganization = async (code: string): Promise<{ message: string; slug: string }> => {
+const joinOrganization = async (
+  code: string,
+): Promise<{ message: string; slug: string }> => {
   const res = await api.post("/api/org/join", { code });
   return res.data;
 };
@@ -36,7 +39,9 @@ export function useCreateOrganization() {
       toast.success("Organization created!");
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to create organization");
+      toast.error(
+        error.response?.data?.message || "Failed to create organization",
+      );
     },
   });
 }
@@ -51,7 +56,9 @@ export function useJoinOrganization() {
       toast.success("Joined organization!");
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to join organization");
+      toast.error(
+        error.response?.data?.message || "Failed to join organization",
+      );
     },
   });
 }
