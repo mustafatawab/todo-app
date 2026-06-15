@@ -10,9 +10,9 @@ import { AppError } from "../../shared/error/AppError";
 export const createTodo = async (
   input: TodoCreateInput,
   orgId: string,
-  userdId: string,
+  userId: string,
 ) => {
-  const { title, description, priority, dueDate } = input;
+  const { title, description, priority, dueDate, assignedToId } = input;
 
   const org = await prisma.organization.findUnique({ where: { id: orgId } });
 
@@ -23,7 +23,18 @@ export const createTodo = async (
     );
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userdId } });
+
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+
+  
+
+  const assignedId = await prisma.user.findUnique({where : { id : assignedToId!}})
+
+  if (!assignedId){
+    throw new AppError("Assigned To ID Does not found " , 404)
+  }
 
   const task = await prisma.task.create({
     data: {
@@ -33,6 +44,7 @@ export const createTodo = async (
       description: description || null,
       priority: priority,
       dueDate: dueDate ? new Date(dueDate) : null,
+      assignedToId : assignedToId!
     },
   });
 

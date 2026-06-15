@@ -6,7 +6,7 @@ export const statusEnum = z.enum(["TODO", "INPROGRESS", "DONE"]);
 export const todoCreateSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
-  
+  assignedToId : z.string().optional(),
   priority: priorityEnum.default("MEDIUM"),
   dueDate: z.string().datetime().optional().nullable(),
 });

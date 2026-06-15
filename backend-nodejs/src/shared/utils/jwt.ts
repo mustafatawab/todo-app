@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import type { SignOptions } from "jsonwebtoken";
 import { env } from "../config/env";
+import { AppError } from "../error/AppError";
 
 export interface TokenPayload {
   userId: string;
@@ -21,7 +22,7 @@ export const verifyAccessToken = (token: string): TokenPayload | null => {
     return decoded;
   } catch (error) {
     // return null;
-    throw new Error("Invalid token");
+    throw new AppError("Invalid token" , 401);
   }
 };
 
@@ -38,6 +39,6 @@ export const verifyRefreshToken = (token: string): TokenPayload | null => {
     return decoded;
   } catch (error) {
     // return null;
-    throw new Error("Invalid token");
+    throw new AppError("Invalid token" , 401);
   }
 };

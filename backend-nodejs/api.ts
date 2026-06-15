@@ -10,6 +10,7 @@ import cors from "cors";
 import { authMiddleware } from "./src/shared/middleware/auth.middleware";
 import { csrfMiddleware } from "./src/shared/middleware/csrf.middleware";
 import { AppError } from "./src/shared/error/AppError";
+import { requireOrgAdmin } from "./src/shared/middleware/requireOrgAdmin.middleware";
 
 
 export const app = express();
@@ -32,7 +33,8 @@ app.use("/api/auth", authRouter);
 
 app.use(authMiddleware);
 
-app.use("/api/org", todoRouter);
+
+app.use("/api/org/:slug/tasks", todoRouter);
 
 app.use("/api/org" ,  orgRouter)
 

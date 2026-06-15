@@ -7,18 +7,19 @@ import {
   listAllTodoHandler
 
 } from "./todo.controller";
+import { requireOrgAdmin } from "../../shared/middleware/requireOrgAdmin.middleware";
 
 const router = Router();
 
 
 router.get("/" , listAllTodoHandler)
 
-router.post("/", createTodoHandler);
+router.post("/", requireOrgAdmin, createTodoHandler);
 
-router.put("/:id", updateTodoHandler);
+router.put("/:id", requireOrgAdmin, updateTodoHandler);
 
 router.patch("/:id/status", statusChangeTodoHandler);
 
-router.delete("/:id", deleteTodoHandler);
+router.delete("/:id", requireOrgAdmin, deleteTodoHandler);
 
 export { router as todoRouter };

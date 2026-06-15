@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const handleExpireSession = () => {
       toast.error("Session expired. Please login again.");
-      router.push("/");
+      router.push("/login");
     };
 
     window.addEventListener("auth:session-expired", handleExpireSession);

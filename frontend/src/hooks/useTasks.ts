@@ -8,8 +8,8 @@ const getTasks = async (slug: string) => {
   return res.data;
 };
 
-const createTask = async ({ data }: {  data: any }) => {
-  const res = await api.post(`/api/org/tasks`, data);
+const createTask = async ({ slug, data }: { slug: string, data: any }) => {
+  const res = await api.post(`/api/org/${slug}/tasks`, data);
   return res.data;
 };
 
@@ -47,7 +47,7 @@ export function useCreateTask() {
   const slug = currentOrg?.slug!;
 
   return useMutation({
-    mutationFn: (data: any) => createTask({ data }),
+    mutationFn: (data: any) => createTask({slug,  data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks", slug] });
       toast.success("Task created");

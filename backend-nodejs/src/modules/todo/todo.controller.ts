@@ -94,9 +94,6 @@ export const statusChangeTodoHandler = async (
   }
 };
 
-
-
-
 // ================= Delete Todo
 
 export const deleteTodoHandler = async (
