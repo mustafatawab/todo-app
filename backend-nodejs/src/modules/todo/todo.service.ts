@@ -24,33 +24,69 @@ export const createTodo = async (
     );
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const { role } = await getUserRole(userId, orgId);
 
-  if (!user) {
-    throw new AppError("User not found while creating the task", 404);
+  if (role === "MEMBER" && assignedToId && assignedToId !== userId) {
+    throw new AppError(
+      "Members can only create and assign tasks to themselves",
+      403,
+    );
   }
 
-  if (assignedToId) {
-    const assignedId = await prisma.user.findFirst({
-      where: { id: assignedToId! },
+  let finalAssignedId: string | null = null;
+
+  if (assignedToId && assignedToId.trim() !== "") {
+    const assignedUser = await prisma.user.findUnique({
+      where: { id: assignedToId },
     });
 
-    if (!assignedId) {
-      throw new AppError("Assigned To ID Does not found ", 404);
+    if (!assignedUser) {
+      throw new AppError("Assigned User ID not found", 404);
     }
+    finalAssignedId = assignedUser.id;
+  } else if (role === "MEMBER") {
+    // If a member leaves it blank, default assign it to themselves
+    finalAssignedId = userId;
   }
 
   const task = await prisma.task.create({
     data: {
       orgId: org.id,
-      createdById: user!.id,
+      createdById: userId,
       title,
       description: description || null,
       priority: priority,
       dueDate: dueDate ? new Date(dueDate) : null,
-      assignedToId: assignedToId!,
+      assignedToId: finalAssignedId, // Explicitly safe mapped ID
     },
   });
+  // const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  // if (!user) {
+  //   throw new AppError("User not found while creating the task", 404);
+  // }
+
+  // if (assignedToId) {
+  //   const assignedId = await prisma.user.findFirst({
+  //     where: { id: assignedToId! },
+  //   });
+
+  //   if (!assignedId) {
+  //     throw new AppError("Assigned To ID Does not found ", 404);
+  //   }
+  // }
+
+  // const task = await prisma.task.create({
+  //   data: {
+  //     orgId: org.id,
+  //     createdById: user!.id,
+  //     title,
+  //     description: description || null,
+  //     priority: priority,
+  //     dueDate: dueDate ? new Date(dueDate) : null,
+  //     assignedToId: assignedToId!,
+  //   },
+  // });
 
   return task;
 };
@@ -79,14 +115,11 @@ export const listAllTodo = async (userId: string, orgId: string) => {
     throw new AppError("User not found while createing the todo  ", 404);
   }
 
-  const membership = user.orgMemberships[0]; // Will contain 0 or 1 item due to @@unique constraint
-  if (!membership) {
-    throw new AppError("User is not a member of this organization", 403);
-  }
+  const { role } = await getUserRole(userId, orgId);
 
   let tasks;
 
-  if (membership.role == "ADMIN") {
+  if (role == "ADMIN") {
     tasks = await prisma.task.findMany({
       where: { orgId: orgId },
       orderBy: { createdAt: "desc" },
@@ -95,7 +128,7 @@ export const listAllTodo = async (userId: string, orgId: string) => {
     tasks = await prisma.task.findMany({
       where: {
         orgId: orgId,
-        OR: [{ createdByID: userId }, { assignedToId: userId }],
+        assignedToId: userId,
       },
     });
   }
@@ -240,7 +273,7 @@ export const deleteTodo = async (
     );
   }
 
-   const task = await prisma.task.findFirst({ where: { id: taskId, orgId } });
+  const task = await prisma.task.findFirst({ where: { id: taskId, orgId } });
 
   // const task = await prisma.task.findFirst({
   //   where: {
@@ -250,7 +283,7 @@ export const deleteTodo = async (
   //   },
   // });
 
-    if (!task) throw new AppError("Task not found", 404);
+  if (!task) throw new AppError("Task not found", 404);
 
   const deletedTask = await prisma.task.delete({
     where: { id: taskId },
