@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 
 function getTokenExpiry(token: string): number | null {
   try {
+    
     const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.exp ? payload.exp * 1000 : null;
   } catch {
@@ -37,7 +38,7 @@ export function middleware(request: NextRequest, response: NextResponse) {
   const accessValid = accessToken ? !isTokenExpired(accessToken.value) : false;
   const refreshValid = refreshToken ? !isTokenExpired(refreshToken.value) : false;
 
-  const isAuthenticated = accessValid || refreshValid;
+  const isAuthenticated = accessValid && refreshValid;
 
   const isAuthRoute = AUTH_ROUTES.includes(pathname)
 

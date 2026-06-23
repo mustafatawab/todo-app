@@ -23,17 +23,20 @@ export const createTodo = async (
     );
   }
 
-
-
   const user = await prisma.user.findUnique({ where: { id: userId } });
 
+  if (!user) {
+    throw new AppError("User not found while creating the task", 404);
+  }
 
-  
+  if (assignedToId) {
+    const assignedId = await prisma.user.findFirst({
+      where: { id: assignedToId! },
+    });
 
-  const assignedId = await prisma.user.findUnique({where : { id : assignedToId!}})
-
-  if (!assignedId){
-    throw new AppError("Assigned To ID Does not found " , 404)
+    if (!assignedId) {
+      throw new AppError("Assigned To ID Does not found ", 404);
+    }
   }
 
   const task = await prisma.task.create({
@@ -44,7 +47,7 @@ export const createTodo = async (
       description: description || null,
       priority: priority,
       dueDate: dueDate ? new Date(dueDate) : null,
-      assignedToId : assignedToId!
+      assignedToId: assignedToId!,
     },
   });
 
@@ -62,15 +65,22 @@ export const listAllTodo = async (userId: string, orgId: string) => {
     );
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { orgMemberships: true },
+  });
 
   if (!user) {
     throw new AppError("User not found while createing the todo  ", 404);
   }
 
-  const tasks = await prisma.task.findMany({
-    where: { userId, orgId },
+  let tasks;
+
+  tasks = await prisma.task.findMany({
+    where: { createdById: userId, orgId: orgId },
   });
+
+  // const membership = user.orgMemberships.find(m => m.orgId === orgId)
 
   return tasks;
 };
@@ -167,9 +177,6 @@ export const statusUpdateTodo = async (
     },
   });
 };
-
-
-
 
 // ============== Delete Todo
 export const deleteTodo = async (

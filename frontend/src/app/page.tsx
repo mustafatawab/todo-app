@@ -4,13 +4,16 @@ import { useAuth } from "@/context/authContext";
 import { useOrg } from "@/context/orgContext";
 import { useRouter } from "next/navigation";
 import { Loader2Icon } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
   const { orgs, loading: orgLoading } = useOrg();
   const router = useRouter();
+  const pathname = usePathname()
 
   useEffect(() => {
+    
     if (authLoading || orgLoading) return;
     if (!user) {
       router.push("/login");

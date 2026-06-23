@@ -23,6 +23,8 @@ export const listAllTodoHandler = async (
     const userId = req.user!.userId;
     const orgId = req.org!.id;
 
+    
+
     const result = await listAllTodo(userId, orgId);
 
     return res.status(200).json(result);
@@ -41,8 +43,9 @@ export const createTodoHandler = async (
     const validatedData = todoCreateSchema.parse(req.body);
     const userId = req.user!.userId;
     const orgId = req.org!.id;
-
-    const result = await createTodo(validatedData, userId, orgId);
+    
+ 
+    const result = await createTodo(validatedData, orgId, userId);
 
     return res.status(200).json(result);
   } catch (error) {

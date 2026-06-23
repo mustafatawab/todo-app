@@ -1,13 +1,15 @@
 import axios from "axios";
 
 const getCsrfToken = async () => {
-  if (typeof document === undefined) return null;
+  // FIXED: Added quotes around "undefined"
+  if (typeof document === "undefined") return null;
 
   const match = document.cookie.match(/(?:^|;\s*)csrfToken=([^;]*)/);
   return match ? decodeURIComponent(match[1]) : null;
 };
 
-let isRefresing = false;
+// FIXED: Corrected spelling to isRefreshing
+let isRefreshing = false;
 let failedQueue: any[] = [];
 
 const processQueue = (error: any, token: string | null = null) => {
@@ -34,10 +36,12 @@ api.interceptors.request.use(async (config) => {
   const method = config.method?.toUpperCase();
 
   if (method && !["GET", "HEAD", "OPTIONS"].includes(method)) {
-    const csrfToken = await getCsrfToken();
-
-    if (csrfToken) {
-      config.headers["x-csrf-token"] = csrfToken;
+    // FIXED: Only inject token if not already manually updated by the refresh queue
+    if (!config.headers["x-csrf-token"]) {
+      const csrfToken = await getCsrfToken();
+      if (csrfToken) {
+        config.headers["x-csrf-token"] = csrfToken;
+      }
     }
   }
 
@@ -49,7 +53,9 @@ api.interceptors.response.use(
 
   async (error) => {
     const originalRequest = error.config;
-    if (error.response?.status == 401 && !originalRequest._isRetry) {
+    
+    // FIXED: Use strict inequality ===
+    if (error.response?.status === 401 && !originalRequest._isRetry) {
       if (
         originalRequest.url?.includes("/api/auth/refresh-token") ||
         originalRequest.url?.includes("/api/auth/login") ||
@@ -58,7 +64,7 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      if (isRefresing) {
+      if (isRefreshing) {
         return new Promise(function (resolve, reject) {
           failedQueue.push({ resolve, reject });
         })
@@ -66,7 +72,6 @@ api.interceptors.response.use(
             if (token && originalRequest.headers) {
               originalRequest.headers["x-csrf-token"] = token;
             }
-
             return api(originalRequest);
           })
           .catch((err) => {
@@ -75,12 +80,10 @@ api.interceptors.response.use(
       }
 
       originalRequest._isRetry = true;
-
-      isRefresing = true;
+      isRefreshing = true;
 
       try {
         const refreshResponse = await api.post("/api/auth/refresh-token");
-
         const newCsrfToken = refreshResponse.data.csrfToken;
 
         if (newCsrfToken && originalRequest.headers) {
@@ -88,7 +91,6 @@ api.interceptors.response.use(
         }
 
         processQueue(null, newCsrfToken);
-
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
@@ -98,7 +100,7 @@ api.interceptors.response.use(
         }
         return Promise.reject(refreshError);
       } finally {
-        isRefresing = false;
+        isRefreshing = false;
       }
     }
 

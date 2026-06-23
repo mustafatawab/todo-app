@@ -3,6 +3,7 @@ import React, { createContext, useContext, ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useGetCurrentUser } from "@/hooks/useAuth";
+import { usePathname } from "next/navigation";
 
 type User = {
   id: string;
@@ -21,13 +22,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const { data: currentUser, isPending } = useGetCurrentUser();
 
   useEffect(() => {
     const handleExpireSession = () => {
+      if (pathname == "/login") return
+      if (pathname == "/register") return 
+
       toast.error("Session expired. Please login again.");
-      router.push("/login");
+        router.push("/login");
     };
 
     window.addEventListener("auth:session-expired", handleExpireSession);

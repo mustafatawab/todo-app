@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 import type { Organization } from "@/types";
+import { usePathname } from "next/navigation";
 
 const getOrganizations = async (): Promise<Organization[]> => {
   const res = await api.get("/api/org");
@@ -9,7 +10,6 @@ const getOrganizations = async (): Promise<Organization[]> => {
 };
 
 const createOrganization = async (name: string) => {
-  console.log("Name of the org ", name);
   const res = await api.post("/api/org", { name });
   return res.data;
 };

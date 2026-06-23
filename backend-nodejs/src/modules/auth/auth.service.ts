@@ -17,10 +17,7 @@ export const userRegisteration = async (input: RegisterInput) => {
 
   const existingUser = await prisma.user.findFirst({
     where: {
-      OR: [
-        { email },
-        { username },
-      ],
+      OR: [{ email }, { username }],
     },
   });
 
@@ -47,6 +44,7 @@ export const userRegisteration = async (input: RegisterInput) => {
 
 export const userLogin = async (
   input: LoginInput,
+  orgId: string,
   ipAddress: string,
   device: string,
 ) => {
@@ -54,16 +52,25 @@ export const userLogin = async (
 
   const user = await prisma.user.findFirst({
     where: {
-      OR: [
-        { email: emailOrUsername },
-        { username: emailOrUsername },
-      ],
+      OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
+    },
+    include: {
+      orgMemberships: {
+        where: { orgId: orgId },
+      },
     },
   });
 
   if (!user) {
     throw new AppError("Invalid email or username", 400);
   }
+
+  const membership = user.orgMemberships[0]; // Will contain 0 or 1 item due to @@unique constraint
+  if (!membership) {
+    throw new AppError("User is not a member of this organization", 403);
+  }
+
+  const isAdmin = membership.role === "ADMIN";
 
   const isPasswordValid = await comparePassword(input.password, user.password);
 
@@ -73,8 +80,8 @@ export const userLogin = async (
 
   const payload = {
     userId: user.id,
-    email: user.email,
-    username: user.username,
+    orgId: orgId,
+    isAdmin: isAdmin,
   };
 
   const { accessToken, refreshToken } = generateAuthTokens(payload);
@@ -89,7 +96,7 @@ export const userLogin = async (
     },
   });
 
-  const { password, ...userWithoutPassword } = user;
+  const { password, orgMemberships, ...userWithoutPassword } = user;
 
   return { user: userWithoutPassword, accessToken, refreshToken };
 };
@@ -111,17 +118,13 @@ export const refreshAccessToken = async (
   });
 
   if (!checkTokenInDb) {
-    await prisma.session.delete({
-      where: { token, userId: payload.userId },
-    });
+    // await prisma.session.delete({
+    //   where: { token, userId: payload.userId },
+    // });
     throw new AppError("Refresh token does not found in the database", 401);
   }
 
-  const { accessToken, refreshToken } = generateAuthTokens({
-    userId: payload.userId,
-    email: payload.email,
-    username: payload.username,
-  });
+  const { accessToken, refreshToken } = generateAuthTokens(payload);
 
   await prisma.session.update({
     where: { token, userId: payload.userId },

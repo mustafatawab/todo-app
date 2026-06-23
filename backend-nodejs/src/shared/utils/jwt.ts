@@ -5,8 +5,8 @@ import { AppError } from "../error/AppError";
 
 export interface TokenPayload {
   userId: string;
-  email: string;
-  username: string;
+  orgId : string;
+  isAdmin? : boolean
 }
 
 export const generateAccessToken = (

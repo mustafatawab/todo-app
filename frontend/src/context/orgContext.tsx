@@ -10,6 +10,7 @@ import React, {
 import { useRouter } from "next/navigation";
 import { useGetOrganizations } from "@/hooks/useOrganizations";
 import type { Organization, Role } from "@/types";
+import { usePathname } from "next/navigation";
 
 type OrgContextType = {
   orgs: Organization[];
@@ -23,11 +24,16 @@ type OrgContextType = {
 const OrgContext = createContext<OrgContextType | undefined>(undefined);
 
 export function OrgProvider({ children }: { children: ReactNode }) {
+
+  const pathname  = usePathname()
+
   const { data: orgs = [], isLoading, refetch } = useGetOrganizations();
   const [currentOrg, setCurrentOrg] = useState<Organization | null>(null);
   const router = useRouter();
 
   useEffect(() => {
+    if (pathname == "/login") return 
+    if (pathname == "/register") return 
     if (!orgs.length) {
       setCurrentOrg(null);
       return;
