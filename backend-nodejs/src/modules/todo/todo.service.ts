@@ -5,6 +5,7 @@ import type {
 } from "./todo.schema";
 import { prisma } from "../../shared/lib/prisma";
 import { AppError } from "../../shared/error/AppError";
+import { getUserRole } from "../../shared/utils/getRole";
 
 // ============== Create Todo service
 export const createTodo = async (
@@ -67,20 +68,37 @@ export const listAllTodo = async (userId: string, orgId: string) => {
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { orgMemberships: true },
+    include: {
+      orgMemberships: {
+        where: { orgId: orgId },
+      },
+    },
   });
 
   if (!user) {
     throw new AppError("User not found while createing the todo  ", 404);
   }
 
+  const membership = user.orgMemberships[0]; // Will contain 0 or 1 item due to @@unique constraint
+  if (!membership) {
+    throw new AppError("User is not a member of this organization", 403);
+  }
+
   let tasks;
 
-  tasks = await prisma.task.findMany({
-    where: { createdById: userId, orgId: orgId },
-  });
-
-  // const membership = user.orgMemberships.find(m => m.orgId === orgId)
+  if (membership.role == "ADMIN") {
+    tasks = await prisma.task.findMany({
+      where: { orgId: orgId },
+      orderBy: { createdAt: "desc" },
+    });
+  } else {
+    tasks = await prisma.task.findMany({
+      where: {
+        orgId: orgId,
+        OR: [{ createdByID: userId }, { assignedToId: userId }],
+      },
+    });
+  }
 
   return tasks;
 };
@@ -92,31 +110,39 @@ export const updateTodo = async (
   taskId: string,
   orgId: string,
 ) => {
-  const org = await prisma.organization.findUnique({ where: { id: orgId } });
+  // const org = await prisma.organization.findUnique({ where: { id: orgId } });
 
-  if (!org) {
-    throw new AppError(
-      "Organization not found while listing the ALL todos ",
-      404,
-    );
+  // if (!org) {
+  //   throw new AppError(
+  //     "Organization not found while listing the ALL todos ",
+  //     404,
+  //   );
+  // }
+
+  // const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  // if (!user) {
+  //   throw new AppError("User not found while updating the todo  ", 404);
+  // }
+
+  const { role } = await getUserRole(userId, orgId);
+
+  if (role === "MEMBER") {
+    throw new AppError("Only administrators can edit core task details", 403);
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-
-  if (!user) {
-    throw new AppError("User not found while updating the todo  ", 404);
-  }
-
-  const existing = await prisma.task.findUnique({
-    where: { id: taskId, userId, orgId },
+  const existing = await prisma.task.findFirst({
+    where: {
+      id: taskId,
+      orgId,
+      OR: [{ createdById: userId }, { assignedToId: userId }],
+    },
   });
 
-  if (!existing) {
-    throw new AppError(`Task not found for the ${user.name} `, 404);
-  }
+  if (!existing) throw new AppError("Task not found", 404);
 
   const updatedTask = await prisma.task.update({
-    where: { id: taskId, userId, orgId },
+    where: { id: taskId },
     data: {
       title: input.title ?? existing.title,
       description:
@@ -162,20 +188,25 @@ export const statusUpdateTodo = async (
     );
   }
 
-  const task = await prisma.task.findUnique({
-    where: { id: taskId, userId, orgId },
+  const task = await prisma.task.findFirst({
+    where: {
+      id: taskId,
+      OR: [{ createdById: userId }, { assignedToId: userId }],
+    },
   });
 
   if (!task) {
     throw new AppError(`Task not found for the ${user.name} `, 404);
   }
 
-  const statusTask = await prisma.task.update({
-    where: { id: task.id, userId, orgId },
+  const updatedTask = await prisma.task.update({
+    where: { id: task.id },
     data: {
       status: (input.status as any) ?? task.status,
     },
   });
+
+  return updatedTask;
 };
 
 // ============== Delete Todo
@@ -199,16 +230,30 @@ export const deleteTodo = async (
     );
   }
 
-  const task = await prisma.task.findUnique({
-    where: { id: taskId, userId, orgId },
-  });
+  const { role } = await getUserRole(userId, orgId);
 
-  if (!task) {
-    throw new AppError(`Task not found for the ${user.name} `, 404);
+  // RULE: Hard data deletion is restricted to Admins only
+  if (role === "MEMBER") {
+    throw new AppError(
+      "Unauthorized. Only administrators can delete tasks",
+      403,
+    );
   }
 
+   const task = await prisma.task.findFirst({ where: { id: taskId, orgId } });
+
+  // const task = await prisma.task.findFirst({
+  //   where: {
+  //     id: taskId,
+  //     orgId,
+  //     OR: [{ createdById: userId }, { assignedToId: userId }],
+  //   },
+  // });
+
+    if (!task) throw new AppError("Task not found", 404);
+
   const deletedTask = await prisma.task.delete({
-    where: { id: taskId, userId, orgId },
+    where: { id: taskId },
   });
 
   return deletedTask;

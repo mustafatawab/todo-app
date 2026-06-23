@@ -66,11 +66,13 @@ export const userLogin = async (
   }
 
   const membership = user.orgMemberships[0]; // Will contain 0 or 1 item due to @@unique constraint
-  if (!membership) {
-    throw new AppError("User is not a member of this organization", 403);
+  // if (!membership) {
+  //   throw new AppError("User is not a member of this organization", 403);
+  // }
+  let isAdmin;
+  if (membership) {
+    isAdmin = membership.role === "ADMIN";
   }
-
-  const isAdmin = membership.role === "ADMIN";
 
   const isPasswordValid = await comparePassword(input.password, user.password);
 
@@ -81,7 +83,7 @@ export const userLogin = async (
   const payload = {
     userId: user.id,
     orgId: orgId,
-    isAdmin: isAdmin,
+    isAdmin: isAdmin ? isAdmin : false,
   };
 
   const { accessToken, refreshToken } = generateAuthTokens(payload);
