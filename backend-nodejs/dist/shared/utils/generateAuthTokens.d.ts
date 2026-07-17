@@ -1,6 +1,6 @@
-import type { TokenPayload } from "./jwt";
+import type { TokenPayload } from "./jwt.js";
 export declare const generateAuthTokens: (payload: TokenPayload) => {
-    accessToken: any;
-    refreshToken: any;
+    accessToken: string;
+    refreshToken: string;
 };
 //# sourceMappingURL=generateAuthTokens.d.ts.map

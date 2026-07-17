@@ -1,4 +1,4 @@
-import { createMemberHandler, deleteMemberHandler, getMembersHandlers, updateMembersHandler } from "./member.controller";
+import { createMemberHandler, deleteMemberHandler, getMembersHandlers, updateMembersHandler } from "./member.controller.js";
 import { Router } from "express";
 const router = Router();
 router.post("", createMemberHandler);

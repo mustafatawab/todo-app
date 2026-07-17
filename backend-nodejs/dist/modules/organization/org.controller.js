@@ -1,5 +1,5 @@
-import { createOrganizationSchema, joinOrganizationSchema } from "./org.schema";
-import { createOrganization, joinOrganization, listUserOrganizations, getInviteCode, resetInviteCode } from "./org.service";
+import { createOrganizationSchema, joinOrganizationSchema } from "./org.schema.js";
+import { createOrganization, joinOrganization, listUserOrganizations, getInviteCode, resetInviteCode } from "./org.service.js";
 export const createOrgHandler = async (req, res, next) => {
     try {
         const validatedBody = createOrganizationSchema.parse(req.body);

@@ -1,5 +1,5 @@
-import { createOrganizationSchema, joinOrganizationSchema } from "./org.schema";
-import { createOrganization, joinOrganization, listUserOrganizations, getInviteCode, resetInviteCode } from "./org.service";
+import { createOrganizationSchema, joinOrganizationSchema } from "./org.schema.js";
+import { createOrganization, joinOrganization, listUserOrganizations, getInviteCode, resetInviteCode } from "./org.service.js";
 import type { Request, Response, NextFunction } from "express";
 
 export const createOrgHandler = async (

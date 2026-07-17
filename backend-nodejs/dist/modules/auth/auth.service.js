@@ -1,8 +1,8 @@
-import { prisma } from "../../shared/lib/prisma";
-import { AppError } from "../../shared/error/AppError";
-import { hashPassword, comparePassword } from "../../shared/utils/hash";
-import { verifyRefreshToken } from "../../shared/utils/jwt";
-import { generateAuthTokens } from "../../shared/utils/generateAuthTokens";
+import { prisma } from "../../shared/lib/prisma.js";
+import { AppError } from "../../shared/error/AppError.js";
+import { hashPassword, comparePassword } from "../../shared/utils/hash.js";
+import { verifyRefreshToken } from "../../shared/utils/jwt.js";
+import { generateAuthTokens } from "../../shared/utils/generateAuthTokens.js";
 import crypto from "crypto";
 // User Registration Service
 export const userRegisteration = async (input) => {

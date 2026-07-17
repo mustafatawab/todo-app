@@ -3,7 +3,7 @@ import {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
-} from "./auth.schema";
+} from "./auth.schema.js";
 import type { Request, Response, NextFunction } from "express";
 import {
   userRegisteration,
@@ -13,11 +13,11 @@ import {
   forgotPassword,
   resetPassword,
   getMe,
-} from "./auth.service";
-import { AppError } from "../../shared/error/AppError";
+} from "./auth.service.js";
+import { AppError } from "../../shared/error/AppError.js";
 import crypto from "crypto";
-import { generateCsrfToken } from "../../shared/middleware/csrf.middleware";
-import { setCsrfTokenCookie } from "../../shared/middleware/csrf.middleware";
+import { generateCsrfToken } from "../../shared/middleware/csrf.middleware.js";
+import { setCsrfTokenCookie } from "../../shared/middleware/csrf.middleware.js";
 
 // User Registration Controller
 export const userRegisterationHandler = async (

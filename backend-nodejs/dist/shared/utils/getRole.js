@@ -1,5 +1,5 @@
-import { prisma } from "../lib/prisma";
-import { AppError } from "../error/AppError";
+import { prisma } from "../lib/prisma.js";
+import { AppError } from "../error/AppError.js";
 export const getUserRole = async (userId, orgId) => {
     const user = await prisma.user.findUnique({
         where: { id: userId },

@@ -1,6 +1,6 @@
-import { todoCreateSchema, todoStatusSchema, todoUpdateSchema, } from "./todo.schema";
-import { createTodo, updateTodo, statusUpdateTodo, deleteTodo, listAllTodo, } from "./todo.service";
-import { AppError } from "../../shared/error/AppError";
+import { todoCreateSchema, todoStatusSchema, todoUpdateSchema, } from "./todo.schema.js";
+import { createTodo, updateTodo, statusUpdateTodo, deleteTodo, listAllTodo, } from "./todo.service.js";
+import { AppError } from "../../shared/error/AppError.js";
 // =============== List All Todo Handler
 export const listAllTodoHandler = async (req, res, next) => {
     try {

@@ -1,7 +1,7 @@
-import type { CreateMemberInput, UpdateMemberInput } from "./member.schema";
-import { prisma } from "../../shared/lib/prisma";
-import { AppError } from "../../shared/error/AppError";
-import { hashPassword } from "../../shared/utils/hash";
+import type { CreateMemberInput, UpdateMemberInput } from "./member.schema.js";
+import { prisma } from "../../shared/lib/prisma.js";
+import { AppError } from "../../shared/error/AppError.js";
+import { hashPassword } from "../../shared/utils/hash.js";
 
 export const getMembers = async (orgId: string) => {
   const orgMembers = await prisma.orgMember.findMany({

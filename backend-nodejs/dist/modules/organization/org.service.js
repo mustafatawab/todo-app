@@ -1,5 +1,5 @@
-import { prisma } from "../../shared/lib/prisma";
-import { AppError } from "../../shared/error/AppError";
+import { prisma } from "../../shared/lib/prisma.js";
+import { AppError } from "../../shared/error/AppError.js";
 import crypto from "crypto";
 export const createOrganization = async (input, userId) => {
     const slug = input.name.toLowerCase().replace(/\s+/g, "-");

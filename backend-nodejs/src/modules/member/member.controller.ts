@@ -1,10 +1,10 @@
-import { createMemberSchema, updateMemberSchema } from "./member.schema";
+import { createMemberSchema, updateMemberSchema } from "./member.schema.js";
 import {
   createMember,
   deleteMember,
   getMembers,
   updateMember,
-} from "./member.service";
+} from "./member.service.js";
 import type { Request, Response, NextFunction } from "express";
 
 export const createMemberHandler = async (

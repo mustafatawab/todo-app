@@ -2,7 +2,7 @@ import {
   todoCreateSchema,
   todoStatusSchema,
   todoUpdateSchema,
-} from "./todo.schema";
+} from "./todo.schema.js";
 import type { Request, Response, NextFunction } from "express";
 import {
   createTodo,
@@ -10,8 +10,8 @@ import {
   statusUpdateTodo,
   deleteTodo,
   listAllTodo,
-} from "./todo.service";
-import { AppError } from "../../shared/error/AppError";
+} from "./todo.service.js";
+import { AppError } from "../../shared/error/AppError.js";
 
 // =============== List All Todo Handler
 export const listAllTodoHandler = async (

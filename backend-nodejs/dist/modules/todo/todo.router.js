@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { createTodoHandler, updateTodoHandler, statusChangeTodoHandler, deleteTodoHandler, listAllTodoHandler, } from "./todo.controller";
-import { requireOrgAdmin } from "../../shared/middleware/requireOrgAdmin.middleware";
-import { resolveOrg } from "../../shared/middleware/resolveOrg.middleware";
+import { createTodoHandler, updateTodoHandler, statusChangeTodoHandler, deleteTodoHandler, listAllTodoHandler, } from "./todo.controller.js";
+import { requireOrgAdmin } from "../../shared/middleware/requireOrgAdmin.middleware.js";
+import { resolveOrg } from "../../shared/middleware/resolveOrg.middleware.js";
 const router = Router({ mergeParams: true });
 router.get("/", resolveOrg, listAllTodoHandler);
 router.post("/", requireOrgAdmin, createTodoHandler);

@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import { env } from "../config/env";
-import { AppError } from "../error/AppError";
+import { env } from "../config/env.js";
+import { AppError } from "../error/AppError.js";
 export const generateAccessToken = (payload, options = "15m") => {
     return jwt.sign(payload, env.JWT_SECRET, { expiresIn: options });
 };

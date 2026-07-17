@@ -1,8 +1,8 @@
 import { z } from "zod";
 export declare const envSchema: z.ZodObject<{
     NODE_ENV: z.ZodDefault<z.ZodEnum<{
-        production: "production";
         development: "development";
+        production: "production";
         test: "test";
     }>>;
     PORT: z.ZodDefault<z.ZodString>;
@@ -10,7 +10,7 @@ export declare const envSchema: z.ZodObject<{
     DATABASE_URL: z.ZodString;
 }, z.core.$strip>;
 export declare const env: {
-    NODE_ENV: "production" | "development" | "test";
+    NODE_ENV: "development" | "production" | "test";
     PORT: string;
     JWT_SECRET: string;
     DATABASE_URL: string;

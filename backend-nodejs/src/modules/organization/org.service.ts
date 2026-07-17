@@ -1,9 +1,9 @@
 import type {
   CreateOrganizationInput,
   JoinOrganizationInput,
-} from "./org.schema";
-import { prisma } from "../../shared/lib/prisma";
-import { AppError } from "../../shared/error/AppError";
+} from "./org.schema.js";
+import { prisma } from "../../shared/lib/prisma.js";
+import { AppError } from "../../shared/error/AppError.js";
 import crypto from "crypto";
 
 export const createOrganization = async (

@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import type { Response, Request, NextFunction } from "express";
-import { AppError } from "../error/AppError";
+import { AppError } from "../error/AppError.js";
 
 export const generateCsrfToken = () => {
   return crypto.randomBytes(24).toString("hex");

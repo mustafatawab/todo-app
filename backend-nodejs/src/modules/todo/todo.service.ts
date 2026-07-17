@@ -2,10 +2,10 @@ import type {
   TodoCreateInput,
   TodoUpdateInput,
   TodoStatusInput,
-} from "./todo.schema";
-import { prisma } from "../../shared/lib/prisma";
-import { AppError } from "../../shared/error/AppError";
-import { getUserRole } from "../../shared/utils/getRole";
+} from "./todo.schema.js";
+import { prisma } from "../../shared/lib/prisma.js";
+import { AppError } from "../../shared/error/AppError.js";
+import { getUserRole } from "../../shared/utils/getRole.js";
 
 // ============== Create Todo service
 export const createTodo = async (

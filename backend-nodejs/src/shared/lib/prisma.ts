@@ -1,6 +1,6 @@
-import { PrismaClient } from "../../../generated/prisma/client";
+import { PrismaClient } from "../../../generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { env } from "../config/env";
+import { env } from "../config/env.js";
 
 // During development, when you save a file, Node.js reloads your code.
 // Without this, a new Prisma client would be created every time, causing:

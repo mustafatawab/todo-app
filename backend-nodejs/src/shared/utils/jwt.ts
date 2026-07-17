@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import type { SignOptions } from "jsonwebtoken";
-import { env } from "../config/env";
-import { AppError } from "../error/AppError";
+import { env } from "../config/env.js";
+import { AppError } from "../error/AppError.js";
 
 export interface TokenPayload {
   userId: string;

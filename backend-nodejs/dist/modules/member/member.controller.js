@@ -1,5 +1,5 @@
-import { createMemberSchema, updateMemberSchema } from "./member.schema";
-import { createMember, deleteMember, getMembers, updateMember, } from "./member.service";
+import { createMemberSchema, updateMemberSchema } from "./member.schema.js";
+import { createMember, deleteMember, getMembers, updateMember, } from "./member.service.js";
 export const createMemberHandler = async (req, res, next) => {
     try {
         const validatedData = createMemberSchema.parse(req.body);

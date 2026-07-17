@@ -1,4 +1,4 @@
-import { generateAccessToken, generateRefreshToken } from "./jwt";
+import { generateAccessToken, generateRefreshToken } from "./jwt.js";
 export const generateAuthTokens = (payload) => {
     const refreshTokenExpiry = "7d";
     const accessTokenExpiry = "15m";

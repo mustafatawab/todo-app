@@ -1,5 +1,5 @@
-import { requireOrgAdmin } from "../../shared/middleware/requireOrgAdmin.middleware";
-import { createMemberHandler, deleteMemberHandler, getMembersHandlers, updateMembersHandler } from "./member.controller";
+import { requireOrgAdmin } from "../../shared/middleware/requireOrgAdmin.middleware.js";
+import { createMemberHandler, deleteMemberHandler, getMembersHandlers, updateMembersHandler } from "./member.controller.js";
 import { Router } from "express";
 
 const router = Router();

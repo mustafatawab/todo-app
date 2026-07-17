@@ -5,9 +5,9 @@ import {
   joinOrganizationHandler,
   getInviteCodeHandler,
   resetInviteCodeHandler,
-} from "./org.controller";
-import { memberRouter } from "../member/member.router";
-import { requireOrgAdmin } from "../../shared/middleware/requireOrgAdmin.middleware";
+} from "./org.controller.js";
+import { memberRouter } from "../member/member.router.js";
+import { requireOrgAdmin } from "../../shared/middleware/requireOrgAdmin.middleware.js";
 
 const router = Router();
 

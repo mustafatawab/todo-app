@@ -1,6 +1,6 @@
-import { prisma } from "../../shared/lib/prisma";
-import { AppError } from "../../shared/error/AppError";
-import { getUserRole } from "../../shared/utils/getRole";
+import { prisma } from "../../shared/lib/prisma.js";
+import { AppError } from "../../shared/error/AppError.js";
+import { getUserRole } from "../../shared/utils/getRole.js";
 // ============== Create Todo service
 export const createTodo = async (input, orgId, userId) => {
     const { title, description, priority, dueDate, assignedToId } = input;

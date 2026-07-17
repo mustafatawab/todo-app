@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { AppError } from "../error/AppError";
-import { prisma } from "../../shared/lib/prisma";
+import { AppError } from "../error/AppError.js";
+import { prisma } from "../../shared/lib/prisma.js";
 
 export const resolveOrg = async (
   req: Request,

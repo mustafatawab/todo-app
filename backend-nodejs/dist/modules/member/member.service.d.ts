@@ -1,5 +1,12 @@
-import type { CreateMemberInput, UpdateMemberInput } from "./member.schema";
-export declare const getMembers: (orgId: string) => Promise<any>;
+import type { CreateMemberInput, UpdateMemberInput } from "./member.schema.js";
+export declare const getMembers: (orgId: string) => Promise<{
+    id: string;
+    userId: string;
+    name: string;
+    email: string;
+    role: import("../../../generated/prisma/index.js").$Enums.Role;
+    joinedAt: Date;
+}[]>;
 export declare const createMember: (input: CreateMemberInput, orgId: string) => Promise<{
     message: string;
 }>;

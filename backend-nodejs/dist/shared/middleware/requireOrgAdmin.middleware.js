@@ -1,5 +1,5 @@
-import { AppError } from "../error/AppError";
-import { prisma } from "../../shared/lib/prisma";
+import { AppError } from "../error/AppError.js";
+import { prisma } from "../../shared/lib/prisma.js";
 export const requireOrgAdmin = async (req, res, next) => {
     try {
         const userId = req.user?.userId;

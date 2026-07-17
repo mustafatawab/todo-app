@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { refreshAccessTokenHandler, userLoginHandler, userLogoutHandler, userRegisterationHandler, forgotPasswordHandler, resetPasswordHandler, getMeHandler, } from "./auth.controller";
-import { authMiddleware } from "../../shared/middleware/auth.middleware";
+import { refreshAccessTokenHandler, userLoginHandler, userLogoutHandler, userRegisterationHandler, forgotPasswordHandler, resetPasswordHandler, getMeHandler, } from "./auth.controller.js";
+import { authMiddleware } from "../../shared/middleware/auth.middleware.js";
 const router = Router();
 /**
  * @openapi

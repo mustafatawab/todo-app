@@ -1,8 +1,8 @@
-import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, } from "./auth.schema";
-import { userRegisteration, userLogin, refreshAccessToken, userLogout, forgotPassword, resetPassword, getMe, } from "./auth.service";
-import { AppError } from "../../shared/error/AppError";
-import { generateCsrfToken } from "../../shared/middleware/csrf.middleware";
-import { setCsrfTokenCookie } from "../../shared/middleware/csrf.middleware";
+import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, } from "./auth.schema.js";
+import { userRegisteration, userLogin, refreshAccessToken, userLogout, forgotPassword, resetPassword, getMe, } from "./auth.service.js";
+import { AppError } from "../../shared/error/AppError.js";
+import { generateCsrfToken } from "../../shared/middleware/csrf.middleware.js";
+import { setCsrfTokenCookie } from "../../shared/middleware/csrf.middleware.js";
 // User Registration Controller
 export const userRegisterationHandler = async (req, res, next) => {
     try {

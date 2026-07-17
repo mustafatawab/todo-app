@@ -7,8 +7,8 @@ export declare const priorityEnum: z.ZodEnum<{
 }>;
 export declare const statusEnum: z.ZodEnum<{
     TODO: "TODO";
-    INPROGRESS: "INPROGRESS";
     DONE: "DONE";
+    INPROGRESS: "INPROGRESS";
 }>;
 export declare const todoCreateSchema: z.ZodObject<{
     title: z.ZodString;
@@ -36,8 +36,8 @@ export declare const todoUpdateSchema: z.ZodObject<{
 export declare const todoStatusSchema: z.ZodObject<{
     status: z.ZodDefault<z.ZodEnum<{
         TODO: "TODO";
-        INPROGRESS: "INPROGRESS";
         DONE: "DONE";
+        INPROGRESS: "INPROGRESS";
     }>>;
 }, z.core.$strip>;
 export type TodoCreateInput = z.infer<typeof todoCreateSchema>;
