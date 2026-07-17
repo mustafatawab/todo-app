@@ -54,34 +54,58 @@ export const createMember = async (input: CreateMemberInput, orgId: string) => {
   return { message: "Member added successfully" };
 };
 
+const countAdmins = async (orgId: string): Promise<number> => {
+  return prisma.orgMember.count({
+    where: { orgId, role: "ADMIN" },
+  });
+};
+
 export const updateMember = async (
   input: UpdateMemberInput,
   orgId: string,
   userId: string,
 ) => {
-  const updated = await prisma.orgMember.update({
-    where: {
-      userId_orgId: {
-        userId,
-        orgId,
-      },
-    },
-    data: {
-      role: input.role,
-    },
+  const current = await prisma.orgMember.findUnique({
+    where: { userId_orgId: { userId, orgId } },
+  });
+
+  if (!current) {
+    throw new AppError("Member not found", 404);
+  }
+
+  if (current.role === "ADMIN" && input.role === "MEMBER") {
+    const adminCount = await countAdmins(orgId);
+    if (adminCount <= 1) {
+      throw new AppError("Cannot demote the last admin of the organization", 403);
+    }
+  }
+
+  await prisma.orgMember.update({
+    where: { userId_orgId: { userId, orgId } },
+    data: { role: input.role },
   });
 
   return { message: "Member role updated" };
 };
 
 export const deleteMember = async (orgId: string, userId: string) => {
+  const current = await prisma.orgMember.findUnique({
+    where: { userId_orgId: { userId, orgId } },
+  });
+
+  if (!current) {
+    throw new AppError("Member not found", 404);
+  }
+
+  if (current.role === "ADMIN") {
+    const adminCount = await countAdmins(orgId);
+    if (adminCount <= 1) {
+      throw new AppError("Cannot remove the last admin of the organization", 403);
+    }
+  }
+
   await prisma.orgMember.delete({
-    where: {
-      userId_orgId: {
-        orgId,
-        userId,
-      },
-    },
+    where: { userId_orgId: { orgId, userId } },
   });
 
   return { message: "Member deleted successfully" };

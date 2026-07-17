@@ -44,7 +44,6 @@ export const userRegisteration = async (input: RegisterInput) => {
 
 export const userLogin = async (
   input: LoginInput,
-  orgId: string,
   ipAddress: string,
   device: string,
 ) => {
@@ -55,9 +54,7 @@ export const userLogin = async (
       OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
     },
     include: {
-      orgMemberships: {
-        where: { orgId: orgId },
-      },
+      orgMemberships: true,
     },
   });
 
@@ -65,25 +62,17 @@ export const userLogin = async (
     throw new AppError("Invalid email or username", 400);
   }
 
-  const membership = user.orgMemberships[0]; // Will contain 0 or 1 item due to @@unique constraint
-  // if (!membership) {
-  //   throw new AppError("User is not a member of this organization", 403);
-  // }
-  let isAdmin;
-  if (membership) {
-    isAdmin = membership.role === "ADMIN";
-  }
-
   const isPasswordValid = await comparePassword(input.password, user.password);
 
   if (!isPasswordValid) {
-    throw new AppError("Invalid  password", 400);
+    throw new AppError("Invalid password", 400);
   }
 
+  const primaryMembership = user.orgMemberships[0];
   const payload = {
     userId: user.id,
-    orgId: orgId,
-    isAdmin: isAdmin ? isAdmin : false,
+    orgId: primaryMembership?.orgId ?? "",
+    isAdmin: primaryMembership?.role === "ADMIN",
   };
 
   const { accessToken, refreshToken } = generateAuthTokens(payload);
@@ -92,7 +81,7 @@ export const userLogin = async (
     data: {
       token: refreshToken,
       userId: payload.userId,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       ipAddress,
       device,
     },

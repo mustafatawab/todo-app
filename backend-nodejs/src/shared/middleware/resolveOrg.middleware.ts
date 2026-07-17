@@ -22,7 +22,15 @@ export const resolveOrg = async (
       throw new AppError("Organization not found", 404);
     }
 
-    req.org = { id: org.id, slug, role: "MEMBER" };
+    const membership = await prisma.orgMember.findFirst({
+      where: { userId: req.user!.userId, orgId: org.id },
+    });
+
+    if (!membership) {
+      throw new AppError("You are not a member of this organization", 403);
+    }
+
+    req.org = { id: org.id, slug, role: membership.role };
     next();
   } catch (error) {
     next(error);

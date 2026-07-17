@@ -4,6 +4,7 @@ import type {
 } from "./org.schema";
 import { prisma } from "../../shared/lib/prisma";
 import { AppError } from "../../shared/error/AppError";
+import crypto from "crypto";
 
 export const createOrganization = async (
   input: CreateOrganizationInput,
@@ -98,4 +99,27 @@ export const joinOrganization = async (
   });
 
   return { message: "Joined Successfully", slug: org.slug };
+};
+
+export const getInviteCode = async (orgId: string) => {
+  const org = await prisma.organization.findUnique({
+    where: { id: orgId },
+    select: { inviteCode: true },
+  });
+
+  if (!org) {
+    throw new AppError("Organization not found", 404);
+  }
+
+  return { inviteCode: org.inviteCode };
+};
+
+export const resetInviteCode = async (orgId: string) => {
+  const org = await prisma.organization.update({
+    where: { id: orgId },
+    data: { inviteCode: crypto.randomUUID() },
+    select: { inviteCode: true },
+  });
+
+  return { inviteCode: org.inviteCode };
 };

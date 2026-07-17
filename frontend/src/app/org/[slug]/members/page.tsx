@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useOrg } from "@/context/orgContext";
 import { useGetMembers, useAddMember, useRemoveMember, useChangeMemberRole } from "@/hooks/useMembers";
+import { useGetInviteCode, useResetInviteCode } from "@/hooks/useOrganizations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Loader2Icon, ArrowLeftIcon, UserPlusIcon, ShieldIcon, Trash2Icon, ShieldCheckIcon } from "lucide-react";
+import { Loader2Icon, ArrowLeftIcon, UserPlusIcon, ShieldIcon, Trash2Icon, ShieldCheckIcon, CopyIcon, RefreshCwIcon, CheckIcon } from "lucide-react";
 import Link from "next/link";
 import type { Role } from "@/types";
 
@@ -27,10 +28,20 @@ export default function MembersPage() {
 
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteForm, setInviteForm] = useState({ name: "", username: "", email: "", password: "" });
+  const [copied, setCopied] = useState(false);
 
   const { mutateAsync: addMember, isPending: inviteLoading } = useAddMember();
   const { mutateAsync: removeMember } = useRemoveMember();
   const { mutateAsync: changeRole } = useChangeMemberRole();
+  const { data: inviteData, isLoading: inviteLoadingCode } = useGetInviteCode(currentOrg?.slug);
+  const { mutateAsync: resetCode, isPending: resettingCode } = useResetInviteCode();
+
+  const handleCopyCode = async () => {
+    if (!inviteData?.inviteCode) return;
+    await navigator.clipboard.writeText(inviteData.inviteCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   if (!currentOrg) {
     return (
@@ -153,6 +164,41 @@ export default function MembersPage() {
               </AlertDialogContent>
             </AlertDialog>
           </div>
+        </div>
+
+        <div className="mb-6 rounded-xl border bg-card p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-medium">Invite Code</h2>
+            {inviteLoadingCode ? (
+              <Loader2Icon className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+            ) : (
+              inviteData?.inviteCode && (
+                <div className="flex items-center gap-2">
+                  <code className="rounded-md bg-secondary px-2.5 py-1 text-xs font-mono text-foreground select-all">
+                    {inviteData.inviteCode}
+                  </code>
+                  <button
+                    onClick={handleCopyCode}
+                    className="h-7 w-7 rounded-lg text-muted-foreground/40 hover:text-foreground hover:bg-secondary transition-all"
+                    title="Copy invite code"
+                  >
+                    {copied ? <CheckIcon className="h-3.5 w-3.5 mx-auto text-green-500" /> : <CopyIcon className="h-3.5 w-3.5 mx-auto" />}
+                  </button>
+                  <button
+                    onClick={() => resetCode(currentOrg!.slug)}
+                    disabled={resettingCode}
+                    className="h-7 w-7 rounded-lg text-muted-foreground/40 hover:text-foreground hover:bg-secondary transition-all"
+                    title="Reset invite code"
+                  >
+                    <RefreshCwIcon className={`h-3.5 w-3.5 mx-auto ${resettingCode ? "animate-spin" : ""}`} />
+                  </button>
+                </div>
+              )
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Share this code with people you want to invite. They can enter it on the onboarding page to join.
+          </p>
         </div>
 
         {loading ? (

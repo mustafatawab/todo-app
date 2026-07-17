@@ -62,3 +62,32 @@ export function useJoinOrganization() {
     },
   });
 }
+
+export function useGetInviteCode(slug?: string) {
+  return useQuery({
+    queryKey: ["invite-code", slug],
+    queryFn: async () => {
+      const res = await api.get(`/api/org/${slug}/invite-code`);
+      return res.data as { inviteCode: string };
+    },
+    enabled: !!slug,
+  });
+}
+
+export function useResetInviteCode() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (slug: string) => {
+      const res = await api.post(`/api/org/${slug}/invite-code/reset`);
+      return res.data as { inviteCode: string };
+    },
+    onSuccess: (_data, slug) => {
+      queryClient.invalidateQueries({ queryKey: ["invite-code", slug] });
+      toast.success("Invite code reset");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to reset invite code");
+    },
+  });
+}
