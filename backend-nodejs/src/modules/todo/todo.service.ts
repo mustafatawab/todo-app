@@ -111,6 +111,8 @@ export const listAllTodo = async (userId: string, orgId: string) => {
     },
   });
 
+  console.log(user)
+
   if (!user) {
     throw new AppError("User not found while createing the todo  ", 404);
   }
@@ -120,15 +122,17 @@ export const listAllTodo = async (userId: string, orgId: string) => {
   let tasks;
 
   if (role == "ADMIN") {
+    console.log("ADMIN ROLE", role);
     tasks = await prisma.task.findMany({
       where: { orgId: orgId },
       orderBy: { createdAt: "desc" },
     });
   } else {
+    console.log("MEMBER ROLE", role);
     tasks = await prisma.task.findMany({
       where: {
         orgId: orgId,
-        assignedToId: userId,
+        assignedTo: { id: user.id },
       },
     });
   }
