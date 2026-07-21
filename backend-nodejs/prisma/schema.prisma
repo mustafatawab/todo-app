@@ -45,7 +45,7 @@ model User {
 
 model Session {
   id        String    @id @default(uuid())
-  token     String?   @unique
+  token     String   @unique
   expiresAt DateTime?
   createdAt DateTime  @default(now())
   ipAddress String?
@@ -72,6 +72,7 @@ model OrgMember {
   id        String   @id @default(uuid())
   role      Role     @default(MEMBER)
   joinedAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId String
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -80,6 +81,9 @@ model OrgMember {
   org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
   @@unique([userId, orgId])
+
+  @@index([userId])
+  @@index([orgId])
   @@map("org_member")
 }
 
@@ -92,6 +96,8 @@ model Task {
   dueDate     DateTime?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  completedAt DateTime?
+  deletedAt   DateTime?
 
   createdById String
   createdBy   User   @relation("CreatedTasks", fields: [createdById], references: [id])
@@ -102,7 +108,14 @@ model Task {
   orgId String
   org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
+  @@index([orgId])
+  @@index([assignedToId])
+  @@index([createdById])
+  @@index([status , priority])
+
   @@map("task")
+
+
 }
 
 model PasswordReset {
@@ -112,6 +125,7 @@ model PasswordReset {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  usedAt  DateTime?
 
   @@map("password_reset")
 }
