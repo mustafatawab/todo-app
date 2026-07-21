@@ -1,10 +1,20 @@
 name : taskflow
 
 services:
+
+  migrate:
+    image: taskflow-backend-image:latest
+    command: sh -c "npx prisma db push --force-reset && npx prisma db seed && npx prisma generate"
+    depends_on:
+      db:
+        condition: service_healthy
+
   backend:
     build: 
       context: "./backend-nodejs"
       dockerfile: Dockerfile
+    image: taskflow-backend-image:latest
+    container_name: taskflow-backend-container
     ports:
       - "9000:9000"
     volumes:
@@ -13,9 +23,11 @@ services:
     env_file:
       - ./backend-nodejs/.env
     environment:
-      - DATABSE_URL=postgresql://postgres:1234@db:5432/postgres
+      - DATABASE_URL=postgresql://postgres:1234@db:5432/postgres
       - DIRECT_URL=postgresql://postgres:1234@db:5432/postgres
     depends_on:
+      migrate:
+        condition: service_completed_successfully
       db:
         condition: service_healthy
     restart: unless-stopped
@@ -26,6 +38,8 @@ services:
     build:
       context: "./frontend"
       dockerfile: Dockerfile
+    image: taskflow-frontend-image:latest
+    container_name: taskflow-frontend-container
     ports:
       - "3000:3000"
     volumes:
